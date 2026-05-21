@@ -40,17 +40,20 @@ body{margin:0;font-family:'Baloo 2','ZCOOL KuaiLe',sans-serif;
 .pager button:hover:not(:disabled){transform:translateY(-3px)}
 .pager button:disabled{opacity:.35;cursor:default}
 .pager button.next{margin-left:auto;color:#ff7a63}
-.site-footer{max-width:780px;margin:0 auto 36px;padding:0 20px;text-align:center;color:#7a6f60;font-size:13px}
-.site-footer .footer-card{background:#fffdf7;border:3px solid #f0e6cf;border-radius:24px;padding:18px 22px;box-shadow:0 6px 0 rgba(120,100,70,.15)}
-.site-footer p{margin:5px 0}
-.site-footer a{color:#ff7a63;text-decoration:none;border-bottom:2px dotted rgba(255,122,99,.55)}
-.site-footer a:hover{color:#4a4035;border-bottom-color:#ffd36b}
 /* 统一回顶 */
 #toTop{position:fixed;right:18px;bottom:22px;z-index:120;background:#fff;border:3px solid #f0e6cf;border-radius:50%;
   width:54px;height:54px;display:grid;place-items:center;font-size:26px;cursor:pointer;box-shadow:0 5px 0 rgba(120,100,70,.18);
   opacity:0;pointer-events:none;transition:opacity .3s,transform .2s}
 #toTop.show{opacity:1;pointer-events:auto}#toTop:hover{transform:translateY(-4px)}
 @media(max-width:560px){.nav-btn{font-size:13px;padding:6px 10px}.nav-home{font-size:14px;padding:6px 11px}}
+/* 全站页脚 */
+#site-footer{margin-top:20px;padding:30px 20px 40px;background:rgba(255,253,247,.7);border-top:3px solid #f0e6cf;text-align:center}
+#site-footer .footer-inner{max-width:780px;margin:0 auto}
+#site-footer .footer-line{font-family:'ZCOOL KuaiLe','Baloo 2',sans-serif;font-size:15px;color:#7a6f60;margin-bottom:10px}
+#site-footer .footer-copy{font-size:13px;color:#a89c88;margin-bottom:6px}
+#site-footer .footer-contact{font-size:13.5px;color:#7a6f60}
+#site-footer .footer-contact a{color:#ff7a63;text-decoration:none;font-weight:700;border-bottom:1.5px dotted #ff9d8a}
+#site-footer .footer-contact a:hover{color:#e0664f}
 
 /* ============ 各页面作用域化样式 ============ */
 /* ===== home ===== */
@@ -1156,6 +1159,7 @@ body{margin:0;font-family:'Baloo 2','ZCOOL KuaiLe',sans-serif;
 <button class="nav-btn" data-goto="i5">🔌 硬件</button>
 <button class="nav-btn" data-goto="i6">📡 软硬连接</button>
 <button class="nav-btn" data-goto="i7">🗼 全栈之路</button>
+<button class="nav-btn" data-goto="d3d">🧊 3D视觉</button>
 <button class="nav-btn" data-goto="case">🎬 真实案例</button>
   </div>
 </nav>
@@ -1169,7 +1173,7 @@ body{margin:0;font-family:'Baloo 2','ZCOOL KuaiLe',sans-serif;
   <header>
     <span class="badge">🐾 写给"什么都还不会"的你 · 一本能反复回看的手册</span>
     <h1>小岛学堂<br>从小白到 AI native 全栈</h1>
-    <p class="sub">把"做一个 web / app / 硬件"这件大事,拆成七座小岛 + 两个真实案例。<br>每座岛都用小动物和比喻,把<b>原理和"为什么"</b>讲透。慢慢看,不着急。</p>
+    <p class="sub">把"做一个 web / app / 硬件 / 3D"这件大事,拆成一座座小岛 + 两个真实案例。<br>每座岛都用小动物和比喻,把<b>原理和"为什么"</b>讲透。慢慢看,不着急。</p>
     <svg class="hero" viewBox="0 0 540 230" xmlns="http://www.w3.org/2000/svg" aria-label="一串小岛与灯塔">
       <ellipse cx="270" cy="200" rx="270" ry="36" fill="#7fd6e8"/>
       <ellipse cx="270" cy="196" rx="225" ry="27" fill="#9ce0ee"/>
@@ -1194,11 +1198,11 @@ body{margin:0;font-family:'Baloo 2','ZCOOL KuaiLe',sans-serif;
     <h3>📖 这本手册怎么用</h3>
     <p>① 这是<b>一个完整的网页</b>:顶部导航栏可以在各岛之间切换,随时点左上角"🏝️ 小岛学堂"回主页,也能用浏览器的"后退"键返回上一个看过的页面。</p>
     <p>② 下面的岛屿卡片、或顶部导航,<b>点一下就能进入对应的岛</b>。每座岛底部还有"上一岛 / 下一岛",可以一座座顺着看。</p>
-    <p>③ <b>顺序建议:</b>先把各岛按"看懂网站→想法变网站→上线→指挥AI→📱App→硬件→软硬连接→全栈"看一遍(慢慢啃,理解"为什么"),再看两个真实案例,最后挑一个最小的 idea 自己动手走一遍。</p>
+    <p>③ <b>顺序建议:</b>先把各岛按"看懂网站→想法变网站→上线→指挥AI→📱App→硬件→软硬连接→全栈→🧊3D视觉"看一遍(慢慢啃,理解"为什么"),再看两个真实案例,最后挑一个最小的 idea 自己动手走一遍。</p>
     <p class="soft">④ 看不懂、卡住都正常——每座岛里都有🌿自测和⭐总纲,随时回看。这本手册会一直在这里陪你。</p>
   </div>
 
-  <div class="section-label">七座小岛 · 把原理一座座吃透</div>
+  <div class="section-label">小岛们 · 把原理一座座吃透</div>
   <div class="islands">
 
     <a class="island i1" href="island-1-deep.html">
@@ -1254,6 +1258,13 @@ body{margin:0;font-family:'Baloo 2','ZCOOL KuaiLe',sans-serif;
       <div class="top"><span class="ic">🗼</span><div><span class="num">第七岛</span><div class="nm">成为 AI native 全栈</div></div></div>
       <div class="ds">这条路通向哪里(灯塔)</div>
       <div class="pts">全栈是什么人·和老派的区别·五阶段地图·AI每阶段的角色·你必须自己长的三种能力</div>
+      <div class="go">前往 →</div>
+    </a>
+
+    <a class="island i7" data-goto="d3d" href="#" style="border-color:#bcccf2">
+      <div class="top"><span class="ic">🧊</span><div><span class="num" style="background:#6c8ce8">3D 岛</span><div class="nm">3D 视觉效果</div></div></div>
+      <div class="ds">从0看懂并做出立体效果(可拖动的实时演示)</div>
+      <div class="pts">立体感原理·五件套·三角网格·光影·Three.js实战·经典案例(粒子/波浪)·透视/光影/色彩美术</div>
       <div class="go">前往 →</div>
     </a>
 
@@ -3024,6 +3035,11 @@ body{margin:0;font-family:'Baloo 2','ZCOOL KuaiLe',sans-serif;
 
 
 </div>
+<div class="page" data-page="d3d" style="display:none">
+  <iframe data-3d-src="island-3d.html" title="3D 视觉岛"
+    style="width:100%;border:none;display:block;min-height:100vh;background:transparent"
+    scrolling="no"></iframe>
+</div>
 <div class="page pg-case" data-page="case" style="display:none">
 
 <div class="cloud c1"></div><div class="cloud c2"></div>
@@ -3244,20 +3260,39 @@ body{margin:0;font-family:'Baloo 2','ZCOOL KuaiLe',sans-serif;
   <button class="next" id="nextBtn">下一岛 →</button>
 </div>
 
-<footer class="site-footer">
-  <div class="footer-card">
-    <p>© 2026 Ronin. All rights reserved.</p>
-    <p>如果有问题可以联系 <a href="mailto:lyc15840936058@gmail.com">lyc15840936058@gmail.com</a></p>
+<footer id="site-footer">
+  <div class="footer-inner">
+    <div class="footer-line">🏝️ 小岛学堂 · 把复杂的事,讲成你听得懂的话</div>
+    <div class="footer-copy">© 2026 小岛学堂. All rights reserved.</div>
+    <div class="footer-contact">如有需要,请联系 <a href="mailto:lyc15840936058@gmail.com">lyc15840936058@gmail.com</a></div>
   </div>
 </footer>
 
 <div id="toTop" title="回到顶部">⛵</div>
 
 <script>
-const ORDER = ['home', 'i1', 'i2', 'i3', 'i4', 'app', 'i5', 'i6', 'i7', 'case'];
-const NAMES = {home:"主页",i1:"看懂网站",i2:"想法变网站",i3:"上线开张",i4:"指挥AI",app:"App",i5:"硬件",i6:"软硬连接",i7:"全栈之路",case:"真实案例"};
+const ORDER = ['home', 'i1', 'i2', 'i3', 'i4', 'app', 'i5', 'i6', 'i7', 'd3d', 'case'];
+const NAMES = {home:"主页",i1:"看懂网站",i2:"想法变网站",i3:"上线开张",i4:"指挥AI",app:"App",i5:"硬件",i6:"软硬连接",i7:"全栈之路",d3d:"3D视觉",case:"真实案例"};
 
 function showPage(key, scrollTop=true){
+  // 3D 岛:首次切入时才加载 iframe(隔离脚本+懒加载Three.js,不看时不占资源)
+  if(key==='d3d'){
+    const f=document.querySelector('iframe[data-3d-src]');
+    if(f && !f.src){
+      f.src=f.getAttribute('data-3d-src');
+      // 加载后尝试把 iframe 高度撑到内容实际高度(同源时可用)
+      f.addEventListener('load',()=>{
+        function fit(){
+          try{
+            const d=f.contentDocument||f.contentWindow.document;
+            const h=Math.max(d.body.scrollHeight, d.documentElement.scrollHeight);
+            if(h>200) f.style.height=h+'px';
+          }catch(e){/* 跨源时退回 min-height:100vh,内部可滚动 */ f.setAttribute('scrolling','yes'); f.style.height='100vh';}
+        }
+        fit(); setTimeout(fit,600); setTimeout(fit,1800);
+      });
+    }
+  }
   document.querySelectorAll('.page').forEach(p=>{
     p.style.display = (p.dataset.page===key) ? 'block' : 'none';
   });

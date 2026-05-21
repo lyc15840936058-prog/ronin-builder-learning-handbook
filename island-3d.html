@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧊 小岛学堂 · 3D 视觉岛 · 从零看懂并做出立体效果</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=ZCOOL+KuaiLe&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky-top:#c5ecff; --sky-mid:#d9f4ee; --sky-bot:#eafaec;
+    --sea:#7fd6e8; --sea-deep:#5cc0d6; --sand:#ffe9b8; --sand-edge:#f6d488;
+    --grass:#8fd98a; --grass-deep:#6cc377; --ink:#4a4035; --ink-soft:#7a6f60;
+    --card:#fffdf7; --card-edge:#f0e6cf; --coral:#ff9d8a; --coral-deep:#ff7a63;
+    --sun:#ffd36b; --berry:#c89bf0; --berry-deep:#a779d8; --leaf:#7cc6a0; --sky-blue:#7bbef0;
+    --shadow:rgba(120,100,70,.18); --code-bg:#3a3550; --code-ink:#f4f0ff; --d3d:#6c8ce8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Baloo 2','ZCOOL KuaiLe',sans-serif;color:var(--ink);
+    background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-mid) 40%,var(--sky-bot) 100%);background-attachment:fixed;line-height:1.9}
+  .cloud{position:fixed;background:#fff;border-radius:50px;opacity:.6;z-index:0;pointer-events:none}
+  .cloud::before,.cloud::after{content:'';position:absolute;background:#fff;border-radius:50%}
+  .c1{width:120px;height:32px;top:5%;left:4%;animation:drift 32s linear infinite}
+  .c1::before{width:48px;height:48px;top:-22px;left:16px}.c1::after{width:34px;height:34px;top:-12px;left:58px}
+  .c2{width:88px;height:24px;top:12%;right:5%;animation:drift 42s linear infinite reverse}
+  .c2::before{width:38px;height:38px;top:-17px;left:12px}.c2::after{width:26px;height:26px;top:-9px;left:44px}
+  @keyframes drift{0%{transform:translateX(0)}50%{transform:translateX(36px)}100%{transform:translateX(0)}}
+  .cover{text-align:center;padding:56px 20px 18px;position:relative;z-index:1}
+  .ribbon{display:inline-block;background:#fff;border:3px solid var(--card-edge);padding:6px 20px;border-radius:30px;font-size:14.5px;color:var(--ink-soft);box-shadow:0 5px 0 var(--shadow);margin-bottom:18px}
+  .cover h1{font-family:'ZCOOL KuaiLe';font-size:clamp(28px,6.5vw,48px);text-shadow:3px 3px 0 #fff,5px 5px 0 var(--sand-edge);line-height:1.3}
+  .cover .sub{margin-top:14px;font-size:16px;color:var(--ink-soft);max-width:560px;margin-inline:auto}
+  .wrap{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:0 20px 80px}
+  .mini-toc{background:var(--card);border:3px solid var(--card-edge);border-radius:24px;padding:22px 24px;margin:22px 0;box-shadow:0 7px 0 var(--shadow)}
+  .mini-toc h4{font-family:'ZCOOL KuaiLe';font-size:18px;margin-bottom:12px;color:var(--ink-soft)}
+  .mini-toc ol{list-style:none;counter-reset:c}.mini-toc li{counter-increment:c;margin:7px 0}
+  .mini-toc a{text-decoration:none;color:var(--ink);font-size:15.5px;display:flex;align-items:center;gap:10px}
+  .mini-toc a:hover{color:var(--coral-deep)}
+  .mini-toc a::before{content:counter(c);background:var(--d3d);color:#fff;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;flex-shrink:0}
+  section.card{background:var(--card);border:3px solid var(--card-edge);border-radius:28px;padding:34px 28px;margin:24px 0;box-shadow:0 9px 0 var(--shadow);position:relative;scroll-margin-top:16px}
+  section.card::before{content:attr(data-step);position:absolute;top:-21px;left:24px;background:var(--d3d);color:#fff;font-family:'ZCOOL KuaiLe';font-size:18px;min-width:44px;height:44px;padding:0 12px;border-radius:24px;display:grid;place-items:center;border:3px solid #fff;box-shadow:0 4px 0 var(--shadow);white-space:nowrap}
+  section.card h3{font-family:'ZCOOL KuaiLe';font-size:clamp(20px,4.6vw,26px);margin:6px 0 16px;display:flex;align-items:center;gap:10px;line-height:1.4}
+  section.card h3 .emoji{font-size:30px;flex-shrink:0}
+  section.card h4{font-family:'ZCOOL KuaiLe';font-size:18px;margin:22px 0 8px;color:var(--berry-deep)}
+  section.card p{font-size:16px;margin:13px 0}
+  .soft{color:var(--ink-soft);font-size:14.5px}
+  strong{color:var(--coral-deep)}
+  .hl{background:linear-gradient(transparent 60%,var(--sun) 60%);padding:0 3px;font-weight:700}
+  .term{font-weight:700;color:var(--berry-deep);border-bottom:2px dotted var(--berry)}
+  .analogy{background:#fff6e6;border:2px dashed var(--sand-edge);border-radius:20px;padding:16px 18px;margin:16px 0;display:flex;gap:13px;align-items:flex-start}
+  .analogy .ic{font-size:30px;flex-shrink:0}.analogy .t{font-size:15.5px}.analogy .t b{color:var(--coral-deep)}
+  .why{background:linear-gradient(135deg,#e6ecfb,#d9e3f9);border:3px solid #bcccf2;border-radius:22px;padding:20px 22px;margin:20px 0;position:relative}
+  .why .lbl{position:absolute;top:-15px;left:18px;background:var(--d3d);color:#fff;font-size:13.5px;padding:3px 14px;border-radius:18px;font-family:'ZCOOL KuaiLe'}
+  .why p{font-size:15.5px;margin:8px 0}.why b{color:#4a6cc8}
+  .code{background:var(--code-bg);border-radius:16px;padding:18px 20px;margin:14px 0;overflow-x:auto;box-shadow:0 5px 0 rgba(80,70,110,.3)}
+  .code .ttl{font-family:'Baloo 2';color:#bcaef0;font-size:13px;margin-bottom:10px}
+  .code pre{font-family:'JetBrains Mono',monospace;color:var(--code-ink);font-size:13px;line-height:1.7;white-space:pre}
+  .code .cm{color:#9b91c4}.code .kw{color:#7bbef0}.code .fn{color:#c89bf0}.code .st{color:#8fd98a}.code .nu{color:#ffd36b}
+  .code-note{font-size:13.5px;color:var(--ink-soft);background:#f4f8ff;border-left:5px solid var(--sky-blue);border-radius:0 12px 12px 0;padding:10px 14px;margin:8px 0 16px}.code-note b{color:var(--sky-blue)}
+  /* 3D 演示框 */
+  .demo{background:linear-gradient(135deg,#2a2740,#3a3550);border:3px solid #524d72;border-radius:22px;padding:0;margin:18px 0;overflow:hidden;box-shadow:0 6px 0 rgba(60,50,90,.35)}
+  .demo .demo-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(255,255,255,.06)}
+  .demo .demo-title{font-family:'ZCOOL KuaiLe';color:#d9d0f5;font-size:14px}
+  .demo .demo-hint{font-size:12px;color:#a99ed0}
+  .demo canvas{display:block;width:100%;height:280px;cursor:grab}
+  .demo canvas:active{cursor:grabbing}
+  .demo-ctrl{display:flex;gap:8px;padding:10px 16px;flex-wrap:wrap;background:rgba(255,255,255,.04)}
+  .demo-ctrl button{font-family:'Baloo 2';font-size:13px;background:#5a548a;color:#fff;border:none;border-radius:12px;padding:6px 14px;cursor:pointer;transition:background .2s}
+  .demo-ctrl button:hover{background:#6c63a8}
+  .demo-ctrl button.on{background:#8fd98a;color:#2a2740}
+  .roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:13px;margin:18px 0}
+  .role{background:#fff;border:3px solid var(--card-edge);border-radius:20px;padding:16px 12px;text-align:center;transition:transform .25s,box-shadow .25s}
+  .role:hover{transform:translateY(-5px);box-shadow:0 9px 0 var(--shadow)}
+  .role .face{font-size:38px;line-height:1}.role .nm{font-family:'ZCOOL KuaiLe';font-size:15px;margin:7px 0 3px}.role .jb{font-size:12.5px;color:var(--ink-soft)}
+  .keep{background:linear-gradient(135deg,#fff0d6,#ffe2cf);border:3px solid var(--sand-edge);border-radius:22px;padding:20px 22px;margin:22px 0;position:relative}
+  .keep .lbl{position:absolute;top:-15px;left:18px;background:var(--coral-deep);color:#fff;font-size:13.5px;padding:3px 13px;border-radius:18px;font-family:'ZCOOL KuaiLe'}
+  .keep p{margin:6px 0;font-size:16px}
+  .tip{background:#eef8ff;border-left:6px solid var(--sky-blue);border-radius:0 16px 16px 0;padding:14px 18px;margin:16px 0;font-size:15px}.tip b{color:var(--sky-blue)}
+  .warn{background:#fff4ec;border-left:6px solid var(--coral-deep);border-radius:0 16px 16px 0;padding:14px 18px;margin:16px 0;font-size:15px}.warn b{color:var(--coral-deep)}
+  .quiz{background:#f3fbe9;border:2px solid var(--grass);border-radius:18px;padding:16px 18px;margin:18px 0}
+  .quiz .q{font-family:'ZCOOL KuaiLe';font-size:16px;color:var(--grass-deep);margin-bottom:6px}
+  .quiz details{font-size:15px}.quiz summary{cursor:pointer;color:var(--ink-soft);font-size:14px}.quiz details[open] summary{margin-bottom:8px}
+  .back-wrap{text-align:center;margin:18px 0 0}
+  .back{display:inline-flex;align-items:center;gap:6px;text-decoration:none;background:#fff;border:2px solid var(--card-edge);border-radius:20px;padding:7px 16px;font-size:14px;color:var(--ink-soft);box-shadow:0 4px 0 var(--shadow);transition:transform .2s}.back:hover{transform:translateY(-3px)}
+  .ending{text-align:center;padding:40px 24px;background:linear-gradient(180deg,#fff,#fff8ea);border:3px solid var(--card-edge);border-radius:28px;box-shadow:0 9px 0 var(--shadow);margin-top:50px}
+  .ending .big{font-size:50px}.ending h3{font-family:'ZCOOL KuaiLe';font-size:24px;margin:10px 0}.ending p{font-size:15.5px;color:var(--ink-soft);max-width:500px;margin:9px auto}
+  .footnote{text-align:center;color:var(--ink-soft);font-size:13px;margin-top:28px;opacity:.8}
+  .scene{width:100%;height:auto;display:block}.hero-scene{max-width:440px;margin:22px auto 0}
+  #toTop{position:fixed;right:18px;bottom:22px;z-index:20;background:#fff;border:3px solid var(--card-edge);border-radius:50%;width:54px;height:54px;display:grid;place-items:center;font-size:26px;cursor:pointer;box-shadow:0 5px 0 var(--shadow);opacity:0;pointer-events:none;transition:opacity .3s,transform .2s}#toTop.show{opacity:1;pointer-events:auto}#toTop:hover{transform:translateY(-4px)}
+  @media(max-width:560px){section.card{padding:30px 18px}.analogy{flex-direction:column;gap:7px}.demo canvas{height:230px}}
+</style>
+</head>
+<body>
+<div class="cloud c1"></div><div class="cloud c2"></div>
+
+<div class="cover" id="top">
+  <span class="ribbon">🧊 3D 视觉岛 · 从零看懂,并亲手做出立体效果</span>
+  <h1>让平面屏幕<br>"骗"出立体感</h1>
+  <p class="sub">这一岛和别的岛不一样——你不只能读懂原理,<br>还能<b>直接在页面里用鼠标拖动真实的 3D</b>。<br>从"屏幕怎么骗出立体"到"亲手做出能转的场景",一步步来。</p>
+  <svg class="scene hero-scene" viewBox="0 0 440 220" xmlns="http://www.w3.org/2000/svg" aria-label="小岛上的3D方块">
+    <ellipse cx="220" cy="190" rx="220" ry="34" fill="#7fd6e8"/><ellipse cx="220" cy="186" rx="180" ry="26" fill="#9ce0ee"/>
+    <ellipse cx="220" cy="172" rx="120" ry="28" fill="#f6d488"/><ellipse cx="220" cy="164" rx="104" ry="22" fill="#8fd98a"/>
+    <!-- 3D 立方体(等距投影骗立体感) -->
+    <g transform="translate(220,120)">
+      <polygon points="0,-34 30,-17 30,17 0,34 -30,17 -30,-17" fill="none"/>
+      <polygon points="0,-34 30,-17 0,0 -30,-17" fill="#a9c0f5"/>
+      <polygon points="-30,-17 0,0 0,34 -30,17" fill="#6c8ce8"/>
+      <polygon points="30,-17 0,0 0,34 30,17" fill="#4a6cc8"/>
+    </g>
+    <text x="150" y="160" font-size="22" text-anchor="middle">🐰</text>
+    <text x="292" y="158" font-size="20" text-anchor="middle">🦊</text>
+    <circle cx="388" cy="42" r="20" fill="#ffd36b"/><circle cx="388" cy="42" r="27" fill="none" stroke="#ffe39a" stroke-width="3" stroke-dasharray="2 7"/>
+  </svg>
+</div>
+
+<div class="wrap">
+  <div class="mini-toc">
+    <h4>🗺️ 3D 视觉岛 · 这次我们要弄懂并做出这 8 件事</h4>
+    <ol>
+      <li><a href="#s1">平面屏幕怎么"骗"出立体感(3D 的根本原理)</a></li>
+      <li><a href="#s2">3D 世界的五件套:场景·相机·物体·材质·光</a></li>
+      <li><a href="#s3">物体是怎么"长"出来的:顶点 → 网格 → 面</a></li>
+      <li><a href="#s4">为什么没有光,你什么都看不见</a></li>
+      <li><a href="#s5">怎么让它动起来:渲染 + 动画循环</a></li>
+      <li><a href="#s6">实战:Three.js 第一个方块(逐行讲)</a></li>
+      <li><a href="#s7">给它加光、加旋转、加鼠标拖动</a></li>
+      <li><a href="#s8">用 AI 做 3D + 卡住怎么办 + 进阶地图</a></li>
+      <li><a href="#s9">🌍 全景篇:整个 3D 世界的版图(网页/游戏/影视/建模)</a></li>
+      <li><a href="#s10">一个 3D 模型从"被造"到"进你产品"的完整流水线</a></li>
+      <li><a href="#s11">AR / VR 和 AI 生成 3D 是怎么回事</a></li>
+      <li><a href="#s12">决策地图:你的 idea 该走哪条 3D 路线</a></li>
+      <li><a href="#s13">🎇 案例篇:经典代码效果(粒子/波浪/发光,都能拖)</a></li>
+      <li><a href="#s14">🎨 美术篇:透视——近大远小的灭点魔法</a></li>
+      <li><a href="#s15">🎨 美术篇:光影——三件套让物体"立"起来</a></li>
+      <li><a href="#s16">🎨 美术篇:色彩——冷暖与对比决定质感</a></li>
+    </ol>
+  </div>
+
+  <!-- 1 -->
+  <section class="card" data-step="1" id="s1">
+    <h3><span class="emoji">👁️</span>平面屏幕怎么"骗"出立体感</h3>
+    <p>先问个根本问题:你的屏幕明明是<strong>平的</strong>,凭什么能让你看到一个"立体"的方块?答案是——<span class="hl">它在骗你的眼睛,而且用的是你大脑本来就吃这一套的把戏。</span></p>
+    <div class="why"><span class="lbl">🔍 深挖：立体感是大脑"脑补"出来的</span>
+      <p>真实世界里,你判断一个东西"立体、有远近",靠的是几条线索:<b>近大远小、近处挡住远处、光照产生的明暗、平行线向远处汇聚</b>。</p>
+      <p>3D 程序做的事,就是<b>在平面上精确地伪造这几条线索</b>:把该小的画小、该被挡的挡住、该暗的地方画暗。你的大脑一看到这些熟悉的线索,就自动"脑补"出立体——根本不需要屏幕真的凸起来。</p>
+      <p>所以"3D 渲染"的本质,是一道<b>数学题</b>:已知一个虚拟立体世界、和一只虚拟眼睛(相机)的位置,算出"这只眼睛应该看到一张什么样的平面图",再把这张图画到你屏幕上。<b>立体是假的,但骗得足够真。</b></p>
+    </div>
+    <div class="analogy"><span class="ic">🎨</span>
+      <div class="t"><b>就像画家画素描。</b><br>纸是平的,但画家用近大远小、明暗阴影,就让你看出一个立体的苹果。3D 程序是"会自动算明暗远近的超级画家"——你给它摆好物体和灯,它每一帧都帮你画出正确的素描。</div>
+    </div>
+    <p>下面这个方块,就是程序实时"画"出来的立体——<strong>你可以用鼠标拖动它</strong>,感受一下这个"骗局"有多真:</p>
+    <div class="demo" data-demo="cube1">
+      <div class="demo-bar"><span class="demo-title">🧊 你的第一个 3D 方块</span><span class="demo-hint">用鼠标拖动它 / 滚轮缩放</span></div>
+      <canvas></canvas>
+    </div>
+    <div class="soft" style="text-align:center">↑ 它其实是画在平面上的。拖动时"近大远小、明暗变化"都在实时重算——这就是 3D 渲染。</div>
+  </section>
+
+  <!-- 2 -->
+  <section class="card" data-step="2" id="s2">
+    <h3><span class="emoji">🎬</span>3D 世界的五件套</h3>
+    <p>任何一个 3D 画面,无论简单复杂,都由<strong>五样东西</strong>搭起来,缺一不可。记住它们,你看任何 3D 工具都不懵。我用"拍一部定格动画"来类比:</p>
+    <div class="roles">
+      <div class="role"><div class="face">🌌</div><div class="nm">场景 Scene</div><div class="jb">摄影棚 · 装下所有东西</div></div>
+      <div class="role"><div class="face">📷</div><div class="nm">相机 Camera</div><div class="jb">那只眼睛 · 决定从哪看</div></div>
+      <div class="role"><div class="face">🧊</div><div class="nm">物体 Mesh</div><div class="jb">演员 · 你要展示的东西</div></div>
+      <div class="role"><div class="face">🎨</div><div class="nm">材质 Material</div><div class="jb">皮肤/涂装 · 长什么样</div></div>
+      <div class="role"><div class="face">💡</div><div class="nm">光 Light</div><div class="jb">灯 · 没它全是黑的</div></div>
+    </div>
+    <div class="why"><span class="lbl">🔍 深挖：为什么是这五样,各自不可替代</span>
+      <p><b>🌌 场景</b>=一个空的虚拟空间,你把所有东西(物体、灯、相机)都放进它里面。它是"舞台"。</p>
+      <p><b>📷 相机</b>=虚拟的眼睛。同一个场景,相机摆的位置/角度不同,你看到的画面就完全不同。<b>"你看到什么"由相机决定。</b></p>
+      <p><b>🧊 物体</b>=场景里真正的"东西"——一个方块、一个球、一个模型。它由"形状"和"材质"两部分组成(下面两条)。</p>
+      <p><b>🎨 材质</b>=物体表面的"皮肤":什么颜色?像金属还是像塑料?光滑还是粗糙?同一个形状,换材质就完全不同质感。</p>
+      <p><b>💡 光</b>=照亮场景的灯。<b>这是新手最容易忘、又最致命的一样</b>——下面第4站专门讲:很多人代码全对,屏幕却一片黑,就是忘了加灯。</p>
+    </div>
+    <div class="keep"><span class="lbl">⭐ 五件套口诀</span>
+      <p>在<b>场景🌌</b>这个摄影棚里,放上<b>物体🧊</b>(穿着<b>材质🎨</b>做的皮肤),</p>
+      <p>打开<b>灯💡</b>,再用<b>相机📷</b>这只眼睛去看——一帧 3D 画面就成了。</p>
+      <p>之后所有 3D,无论多复杂,拆开都是这五样。</p>
+    </div>
+    <div class="quiz"><div class="q">🌿 想一想</div>
+      <p>"我做了个 3D 方块,代码看着都对,可屏幕一片漆黑"——最可能漏了五件套里的哪一样?</p>
+      <details><summary>点我看答案</summary>八成是漏了<b>💡光</b>(或者相机没对准物体)。没有光,物体表面没有明暗,大脑就"脑补"不出立体,甚至直接看不见。这是新手第一大坑,第4站细讲。</details>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="card" data-step="3" id="s3">
+    <h3><span class="emoji">📐</span>物体是怎么"长"出来的:顶点 → 网格 → 面</h3>
+    <p>一个 3D 物体的"形状",在电脑里到底是什么?答案可能出乎你意料:<span class="hl">再复杂的 3D 模型,本质都是一大堆三角形拼成的。</span></p>
+    <div class="why"><span class="lbl">🔍 深挖：从点,到线,到面,到形状</span>
+      <p><b>① 顶点(Vertex)</b>:3D 空间里的一个点,用三个数字表示它的位置——<b>(x, y, z)</b>,分别是"左右、上下、前后"。这是 3D 世界最小的砖。</p>
+      <p><b>② 面(Face)</b>:三个顶点连起来,围成一个<b>三角形</b>。三角形是最简单的"平面片"——为什么用三角形?因为三个点必定在同一个平面上,计算最简单、最不会出错。</p>
+      <p><b>③ 网格(Mesh)</b>:成百上千个三角形拼在一起,就组成了一个物体的<b>外壳</b>,这层壳就叫"网格"。一个球是很多小三角形拼出来的"近似球";一个游戏角色是几万个三角形拼出来的。</p>
+      <p>所以你在游戏里看到的任何东西——人、车、山——<b>剥开它的"皮肤",底下都是一张三角形织成的网。</b>三角形越多,模型越精细,但也越吃性能。</p>
+    </div>
+    <div class="analogy"><span class="ic">⚽</span>
+      <div class="t"><b>就像足球表面的那些块、或低多边形(low-poly)的折纸风模型。</b><br>凑近看,曲面其实是一小片一小片平面拼的。三角形够多够小时,你的眼睛就看成了光滑的曲面。3D 物体全是这么"拼"出来的。</div>
+    </div>
+    <p>看下面这个球——左边正常显示,你<strong>点"看骨架"按钮</strong>,就能看到它其实是无数三角形拼的:</p>
+    <div class="demo" data-demo="wire">
+      <div class="demo-bar"><span class="demo-title">⚽ 一个球的"皮"与"骨"</span><span class="demo-hint">拖动旋转</span></div>
+      <canvas></canvas>
+      <div class="demo-ctrl"><button data-act="solid" class="on">实心皮肤</button><button data-act="wire">看骨架(三角网)</button></div>
+    </div>
+    <div class="tip"><b>💡 关键词记一下:</b>三角形的数量叫<b>"面数 / 多边形数"</b>。你以后听到"这个模型多边形太高,太卡了",意思就是三角形太多、电脑算不过来。3D 的性能优化,很大程度就是在"形状够精细"和"三角形别太多"之间找平衡。</p>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="card" data-step="4" id="s4">
+    <h3><span class="emoji">💡</span>为什么没有光,你什么都看不见</h3>
+    <p>这是新手第一大坑,值得单独一站讲透:<span class="hl">在 3D 世界里,光不是"锦上添花",而是"能不能看见"的前提。</span></p>
+    <div class="why"><span class="lbl">🔍 深挖：因为立体感本身就来自明暗</span>
+      <p>回到第1站:你的大脑靠<b>明暗</b>来判断立体。一个球之所以看起来圆,是因为它<b>朝光的一面亮、背光的一面暗</b>,中间有渐变——这个渐变骗大脑说"这是个球"。</p>
+      <p>如果场景里<b>没有光</b>,物体表面就<b>没有任何明暗差异</b>,要么整体一个死板的颜色(看着像贴纸,毫无立体感),要么(用了需要光的材质时)<b>直接全黑、什么都看不到</b>。</p>
+      <p>所以光在 3D 里干两件事:<b>① 让你能看见物体;② 通过明暗,让物体显出立体。</b>没有光,3D 就塌回了平面。</p>
+    </div>
+    <h4>💡 几种最常用的"灯",像现实里一样</h4>
+    <div class="roles">
+      <div class="role"><div class="face">🌞</div><div class="nm">环境光</div><div class="jb">均匀的天光<br>整体提亮,无方向</div></div>
+      <div class="role"><div class="face">🔦</div><div class="nm">平行光</div><div class="jb">像太阳<br>有方向,产生明暗面</div></div>
+      <div class="role"><div class="face">💡</div><div class="nm">点光源</div><div class="jb">像灯泡<br>从一点向四周照</div></div>
+    </div>
+    <p>下面这个球,你可以<strong>开关不同的灯</strong>,亲眼看到光对"立体感"的决定性作用:</p>
+    <div class="demo" data-demo="light">
+      <div class="demo-bar"><span class="demo-title">💡 光,决定你能不能看见立体</span><span class="demo-hint">拖动旋转</span></div>
+      <canvas></canvas>
+      <div class="demo-ctrl"><button data-act="amb" class="on">环境光🌞</button><button data-act="dir" class="on">平行光🔦</button><button data-act="pt">点光源💡</button></div>
+    </div>
+    <div class="soft" style="text-align:center">↑ 试着把两个灯都关掉——球会变得又扁又死,甚至看不清。这就是光的作用。</div>
+    <div class="keep"><span class="lbl">⭐ 记住</span>
+      <p>遇到"3D 一片黑 / 看着很平"——<b>先检查有没有加光、灯够不够亮、相机有没有对准。</b></p>
+      <p>常用搭配:一盏<b>环境光🌞</b>(整体不至于全黑)+ 一盏<b>平行光🔦</b>(造出明暗、显立体)。这是最稳的起手式。</p>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="card" data-step="5" id="s5">
+    <h3><span class="emoji">🎞️</span>怎么让它动起来:渲染 + 动画循环</h3>
+    <p>到现在我们说的都是"画出一帧"。但 3D 通常是<strong>动</strong>的——会转、会交互。它怎么动起来的?原理简单得让你意外:</p>
+    <div class="why"><span class="lbl">🔍 深挖：动画 = 飞快地一帧帧重画</span>
+      <p><b>渲染(Render)</b>=程序根据"当前场景+相机",算出并画出一帧画面的动作。一次渲染 = 一张静止的图。</p>
+      <p>让它动,靠的是一个<b>动画循环(loop)</b>:程序<b>每秒重复几十次</b>这个过程——稍微挪一下物体的角度 → 渲染一帧 → 再挪一点 → 再渲染一帧……</p>
+      <p>因为快到每秒 60 次,你的眼睛把这一连串静止画面看成了<b>连续的运动</b>——和动画片、电影"一秒很多张"的原理一模一样。所以"让方块转起来"的本质是:<b>在循环里,每一帧都把它的角度加一点点。</b></p>
+    </div>
+    <div class="analogy"><span class="ic">📖</span>
+      <div class="t"><b>就是翻页动画(手翻书)。</b><br>每一页画一个略微不同的姿势,飞快翻动,小人就"动"起来了。3D 的动画循环,就是电脑每秒帮你翻 60 页,每页都重新算好明暗远近。</div>
+    </div>
+    <div class="code"><div class="ttl">🎞️ "让方块转起来"的核心,就这几行(伪代码)</div><pre><span class="kw">function</span> <span class="fn">每一帧</span>() {
+  方块.角度 = 方块.角度 + <span class="nu">0.01</span>;   <span class="cm">← 每帧多转一点点</span>
+  <span class="fn">渲染</span>(场景, 相机);              <span class="cm">← 把这一帧画出来</span>
+  <span class="fn">请求下一帧</span>(每一帧);            <span class="cm">← 循环:马上再来一次</span>
+}
+<span class="fn">每一帧</span>();                        <span class="cm">← 启动循环</span></pre></div>
+    <div class="code-note">读法:<b>“每一帧:把角度加一点、画出来、然后请求马上再来一次。”</b> 这个"请求下一帧"会被浏览器以约每秒60次的节奏调用——于是方块就匀速转起来了。<b>所有 3D 动画,内核都是这个循环。</b></div>
+  </section>
+
+  <!-- 6 -->
+  <section class="card" data-step="6" id="s6">
+    <h3><span class="emoji">🛠️</span>实战:Three.js 第一个方块(逐行讲)</h3>
+    <p>原理通了,该动手了。网页里做 3D,最主流的工具叫 <term>Three.js</term>——它把上面那些数学和五件套都<strong>打包成了好用的积木</strong>,你不用自己算明暗远近。我们用它把前面学的五件套拼出来。</p>
+    <div class="why"><span class="lbl">🔍 深挖：为什么用 Three.js,而不是从零写</span>
+      <p>浏览器底层画 3D 的能力叫 <b>WebGL</b>,但它极其原始难用(要自己写大量数学)。<b>Three.js 是架在 WebGL 上的一层"友好积木"</b>——你说"给我一个方块、一盏灯、一个相机",它替你把底层的脏活全干了。</p>
+      <p>这正是手册一贯的思路:<b>不重复造轮子,站在现成工具的肩膀上。</b>Three.js 是这个领域最成熟、资料最多、AI 最熟的选择,新手首选它。</p>
+    </div>
+    <p>下面是一个<strong>完整能跑</strong>的最小例子。看着长,其实就是"五件套"一件件摆出来。逐行注释了:</p>
+    <div class="code"><div class="ttl">🧊 Three.js 最小完整例子(五件套对照看)</div><pre><span class="cm">// 引入 three.js 工具库</span>
+<span class="kw">import</span> * <span class="kw">as</span> THREE <span class="kw">from</span> <span class="st">'three'</span>;
+
+<span class="cm">// ① 场景🌌:一个空舞台</span>
+<span class="kw">const</span> scene = <span class="kw">new</span> THREE.<span class="fn">Scene</span>();
+
+<span class="cm">// ② 相机📷:那只眼睛(参数大致是:视野角度、画面宽高比、能看多近、多远)</span>
+<span class="kw">const</span> camera = <span class="kw">new</span> THREE.<span class="fn">PerspectiveCamera</span>(<span class="nu">75</span>, <span class="nu">16/9</span>, <span class="nu">0.1</span>, <span class="nu">1000</span>);
+camera.position.z = <span class="nu">3</span>;          <span class="cm">← 把眼睛往后退3步,才看得到方块</span>
+
+<span class="cm">// 渲染器:负责把画面真正画到网页上</span>
+<span class="kw">const</span> renderer = <span class="kw">new</span> THREE.<span class="fn">WebGLRenderer</span>();
+renderer.<span class="fn">setSize</span>(<span class="nu">600</span>, <span class="nu">340</span>);
+document.body.<span class="fn">appendChild</span>(renderer.domElement);  <span class="cm">← 把画布放进网页</span>
+
+<span class="cm">// ③ 物体🧊 = 形状(网格几何体) + ④ 材质🎨(皮肤)</span>
+<span class="kw">const</span> geometry = <span class="kw">new</span> THREE.<span class="fn">BoxGeometry</span>(<span class="nu">1</span>, <span class="nu">1</span>, <span class="nu">1</span>);      <span class="cm">← 一个1×1×1的方块形状</span>
+<span class="kw">const</span> material = <span class="kw">new</span> THREE.<span class="fn">MeshStandardMaterial</span>({ color: <span class="nu">0x6c8ce8</span> }); <span class="cm">← 蓝色、会反光的皮肤</span>
+<span class="kw">const</span> cube = <span class="kw">new</span> THREE.<span class="fn">Mesh</span>(geometry, material);   <span class="cm">← 形状+皮肤=物体</span>
+scene.<span class="fn">add</span>(cube);                    <span class="cm">← 把方块放进场景</span>
+
+<span class="cm">// ⑤ 光💡:不加这个,方块会是黑的!</span>
+<span class="kw">const</span> light = <span class="kw">new</span> THREE.<span class="fn">DirectionalLight</span>(<span class="nu">0xffffff</span>, <span class="nu">1</span>);  <span class="cm">← 一盏白色平行光</span>
+light.position.<span class="fn">set</span>(<span class="nu">2</span>, <span class="nu">2</span>, <span class="nu">3</span>);
+scene.<span class="fn">add</span>(light);
+scene.<span class="fn">add</span>(<span class="kw">new</span> THREE.<span class="fn">AmbientLight</span>(<span class="nu">0xffffff</span>, <span class="nu">0.4</span>)); <span class="cm">← 再加点环境光,别全黑</span>
+
+<span class="cm">// 🎞️ 动画循环:每帧转一点 + 渲染</span>
+<span class="kw">function</span> <span class="fn">animate</span>() {
+  cube.rotation.x += <span class="nu">0.01</span>;
+  cube.rotation.y += <span class="nu">0.01</span>;
+  renderer.<span class="fn">render</span>(scene, camera);
+  <span class="fn">requestAnimationFrame</span>(animate);  <span class="cm">← 请求下一帧,形成循环</span>
+}
+<span class="fn">animate</span>();</pre></div>
+    <div class="code-note">别被长度吓到。<b>从上到下,就是五件套依次登场</b>:场景→相机→(渲染器)→物体+材质→光→动画循环。你<b>不用记这些函数名</b>,看懂"哪一段在干五件套里的哪件事"就够了——以后让 AI 写,你能看懂、能改、能验证,这就是 AI native 需要的能力。</div>
+    <div class="tip"><b>💡 上面那个 <code>0x6c8ce8</code> 是什么:</b>这是颜色的"十六进制"写法,和网页 CSS 里的 <code>#6c8ce8</code> 是同一个蓝色,只是 3D 里习惯用 <code>0x</code> 开头。看到别懵。</p>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="card" data-step="7" id="s7">
+    <h3><span class="emoji">🎮</span>给它加光、加旋转、加鼠标拖动</h3>
+    <p>有了第一个方块,"做出好效果"就是往上叠东西。这一站讲三个最常加的,以及它们的原理。下面这个 demo <strong>三样全有了,你可以直接玩</strong>:</p>
+    <div class="demo" data-demo="full">
+      <div class="demo-bar"><span class="demo-title">🎮 自动转 + 光照 + 鼠标拖动 + 滚轮缩放</span><span class="demo-hint">拖动 / 滚轮</span></div>
+      <canvas></canvas>
+      <div class="demo-ctrl"><button data-act="spin" class="on">自动旋转</button><button data-act="color">换个颜色</button><button data-act="shape">换个形状</button></div>
+    </div>
+    <h4>🔄 加旋转</h4>
+    <p>就是第5站那行 <code>cube.rotation.y += 0.01</code>——在动画循环里每帧给角度加一点。加得多转得快,加得少转得慢。</p>
+    <h4>💡 加光</h4>
+    <p>就是第6站那两盏灯(平行光+环境光)。想要更亮调高数值,想要某面更亮就挪光的位置。</p>
+    <h4>🖱️ 加鼠标拖动(最实用)</h4>
+    <div class="why"><span class="lbl">🔍 深挖：鼠标拖动转视角,本质是"动相机"不是动物体</span>
+      <p>你拖动鼠标"转动"物体时,其实物体没动——<b>是相机📷绕着物体转了</b>(回想第2站:你看到什么由相机决定)。让相机随鼠标绕物体转的功能很常用,Three.js 有现成的一个叫 <term>OrbitControls(轨道控制器)</term>,加几行就能让用户自由拖看、滚轮缩放。</p>
+      <p>这就是为什么网页上的"3D 产品展示"你能360°拖着看——背后就是 OrbitControls 在让相机绕着产品转。</p>
+    </div>
+    <div class="code"><div class="ttl">🖱️ 加上鼠标拖动,就这几行</div><pre><span class="kw">import</span> { OrbitControls } <span class="kw">from</span> <span class="st">'three/examples/jsm/controls/OrbitControls.js'</span>;
+
+<span class="kw">const</span> controls = <span class="kw">new</span> <span class="fn">OrbitControls</span>(camera, renderer.domElement);
+controls.enableDamping = <span class="kw">true</span>;   <span class="cm">← 让拖动有顺滑的惯性</span>
+<span class="cm">// 然后在动画循环里加一行 controls.update();</span></pre></div>
+    <div class="code-note">就这样,用户就能用鼠标 360° 拖看你的物体了。<b>你看,从"一个方块"到"能交互的展示",中间只隔了几行。</b>这就是 Three.js 把难活打包好的威力。</div>
+    <div class="quiz"><div class="q">🌿 想一想</div>
+      <p>你拖鼠标时,到底是物体在转,还是相机在转?</p>
+      <details><summary>点我看答案</summary>是<b>相机📷在绕着物体转</b>(OrbitControls 的作用)。物体本身没动。"你看到什么由相机决定"——这是第2站的核心,这里又用到了。理解这点,你以后做"第一人称走动""环视全景"就都通了,本质都是动相机。</details>
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section class="card" data-step="8" id="s8">
+    <h3><span class="emoji">🪄</span>用 AI 做 3D + 卡住怎么办 + 进阶地图</h3>
+    <p>你是 AI native 路线,3D 完全可以让 Codex/Claude Code 帮你写。但 3D 有它特有的坑,这一站给你"指挥要诀 + 急救 + 往后走的地图"。</p>
+    <h4>🗣️ 怎么指挥 AI 写 3D(用第四岛的五要素)</h4>
+    <div class="code"><div class="ttl">🪄 一条到位的 3D 指令范例</div><pre><span class="st">"用 Three.js 帮我做一个网页 3D 效果:</span>
+<span class="st"> 一个会缓慢自转的【某物体】,有合适的光照能看出立体,</span>
+<span class="st"> 用户能用鼠标拖动旋转视角、滚轮缩放(用 OrbitControls)。</span>
+<span class="st"> 背景透明/某色,画布自适应窗口大小。</span>
+<span class="st"> 我是新手,请给完整能跑的代码,并逐段说明每段在五件套里干嘛、</span>
+<span class="st"> 以及我怎么在本地打开看到效果。"</span></pre></div>
+    <h4>🆘 3D 特有的卡壳,和怎么破</h4>
+    <div class="why"><span class="lbl">🔍 深挖：3D 最常见的三种"看不到东西"</span>
+      <p><b>① 屏幕全黑/灰 → 多半没加光,或灯太弱。</b>(第4站)先加一盏环境光+一盏平行光试试。</p>
+      <p><b>② 啥都没有/空白 → 多半相机没对准、或物体在相机背后。</b>把相机往后退(调大 <code>camera.position.z</code>),或确认物体加进场景了。</p>
+      <p><b>③ 物体黑乎乎没立体感 → 材质和光不匹配。</b>有些材质(如 MeshStandardMaterial)必须有光才显示;调试时可先用"不需要光的材质"(MeshBasicMaterial)排除问题。</p>
+      <p>排错方法和别的岛一样:<b>把现象 + 控制台报错截图喂给 AI</b>。3D 报错常在浏览器控制台(F12),WebGL 相关的提示也在那。</p>
+    </div>
+    <div class="warn"><b>⚠️ 性能提醒:</b>3D 比普通网页吃性能得多(每秒重画几十次、还有大量三角形)。手机上尤其要省着用。原则:<b>三角形别太多、灯别太多、阴影按需开</b>。做炫酷效果时让 AI 帮你注意"在手机上会不会卡"。</p>
+    </div>
+    <h4>🗺️ 学完这岛,往后的进阶地图</h4>
+    <div class="roles">
+      <div class="role"><div class="face">📦</div><div class="nm">导入模型</div><div class="jb">用别人做好的3D模型<br>(.glb/.gltf文件)</div></div>
+      <div class="role"><div class="face">✨</div><div class="nm">材质贴图</div><div class="jb">给物体贴上照片纹理<br>更真实</div></div>
+      <div class="role"><div class="face">🌅</div><div class="nm">阴影/环境</div><div class="jb">投影、环境光遮蔽<br>更有氛围</div></div>
+      <div class="role"><div class="face">🎢</div><div class="nm">React Three Fiber</div><div class="jb">在React里写3D<br>(接上你的web栈)</div></div>
+    </div>
+    <div class="tip"><b>💡 一条好消息:</b>如果你 web 用 React(第一岛/App岛建议的),有个叫 <b>React Three Fiber</b> 的工具,能让你<b>用写 React 组件的方式写 Three.js</b>——3D 就能无缝长进你已有的网页项目里。你前面学的,在这里又接上了。</p>
+    </div>
+    <div class="keep"><span class="lbl">⭐ 3D 视觉岛总纲</span>
+      <p>3D 是<b>用明暗远近"骗"出的立体</b>;任何 3D 画面都由<b>五件套</b>(场景🌌·相机📷·物体🧊·材质🎨·光💡)搭成。</p>
+      <p>物体本质是<b>三角形网格</b>;<b>没光就看不见立体</b>;动画靠<b>每帧重画的循环</b>。</p>
+      <p>网页里用 <b>Three.js</b> 把五件套拼出来,加 <b>OrbitControls</b> 就能鼠标交互。</p>
+      <p>让 AI 写、自己看懂验证;卡住先查<b>光、相机、材质</b>三件事。</p>
+    </div>
+    <div class="back-wrap"><a class="back" href="#top">⛵ 回到本岛目录</a></div>
+  </section>
+
+  <!-- ===== 全景篇 ===== -->
+  <div style="text-align:center;margin:54px 0 8px">
+    <span style="display:inline-block;background:var(--d3d);color:#fff;font-family:'ZCOOL KuaiLe';font-size:14px;padding:4px 18px;border-radius:20px;box-shadow:0 4px 0 var(--shadow)">🌍 全景篇 · 你说"都想了解",这部分给你系统的大图景</span>
+  </div>
+
+  <!-- 9 -->
+  <section class="card" data-step="9" id="s9">
+    <h3><span class="emoji">🌍</span>整个 3D 世界的版图</h3>
+    <p>前面 8 站讲的是"网页 3D"这一条路。但 3D 是个很大的世界,你常听到的那些词(Blender、Unity、虚幻引擎、C4D……)其实分属<strong>四条不同的路</strong>。先把版图摊开,你就不会再被一堆名字绕晕。</p>
+    <div class="why"><span class="lbl">🔍 深挖：先分清两个根本不同的动作——"造"和"用"</span>
+      <p>3D 世界所有事,可以先劈成两半:<b>① 造出 3D 物体(建模)　② 把 3D 物体用起来(渲染/交互/做成产品)</b>。</p>
+      <p>这就像<b>"做家具" vs "用家具布置房间"</b>是两个工种。很多新手的混乱,是把"造模型的软件"和"用模型的引擎"当成一回事。它们经常是<b>不同的工具,接力配合</b>(下一站的流水线会讲)。</p>
+      <p>记住这条分界,下面四条路你一看就懂它各自站在哪。</p>
+    </div>
+    <div class="roles">
+      <div class="role"><div class="face">🌐</div><div class="nm">网页 3D</div><div class="jb">Three.js 等<br>3D 长在网页里</div></div>
+      <div class="role"><div class="face">🎮</div><div class="nm">游戏引擎</div><div class="jb">Unity / 虚幻<br>做游戏和交互世界</div></div>
+      <div class="role"><div class="face">🎬</div><div class="nm">影视级渲染</div><div class="jb">C4D/Blender渲染<br>做高清图和动画片</div></div>
+      <div class="role"><div class="face">🧱</div><div class="nm">3D 建模</div><div class="jb">Blender 等<br>专门"造"模型</div></div>
+    </div>
+    <h4>🌐 路一 · 网页 3D(你前 8 站学的)</h4>
+    <p>用 Three.js 这类,让 3D <strong>跑在浏览器里</strong>。优点:打开网页就能看、不用装、和你的 web 技能一脉相承。适合产品展示、网页装饰、轻量交互。<span class="soft">这是对你最快出成果、最该先掌握的一条。</span></p>
+    <h4>🎮 路二 · 游戏引擎(Unity / 虚幻 Unreal)</h4>
+    <p>专门做<strong>游戏、虚拟世界、复杂实时交互</strong>的"全套工作室"。它把物理碰撞、角色控制、特效、声音、关卡全打包了。能做手机/电脑游戏、也能做 VR、建筑漫游。<span class="soft">代价:比网页 3D 重得多,要学引擎本身,出成果慢。</span></p>
+    <h4>🎬 路三 · 影视级渲染(离线渲染)</h4>
+    <p>追求<strong>极致画质</strong>的静态图或动画片——电影特效、产品广告大片、建筑效果图。它<strong>不要求实时</strong>,可以一帧算几分钟甚至几小时,换来以假乱真的光影。<span class="soft">和网页/游戏的"实时"是两种哲学(下面对比)。</span></p>
+    <h4>🧱 路四 · 3D 建模(Blender 等)</h4>
+    <p>专门<strong>"造"3D 模型</strong>的软件——把一个角色、一辆车、一栋楼"雕"出来。它造出的模型,再拿去喂给前面三条路用。<span class="soft">Blender 免费且强大,是目前最值得新手入门建模的工具。</span></p>
+    <div class="why"><span class="lbl">🔍 深挖：一个关键分水岭——"实时" vs "离线"渲染</span>
+      <p><b>实时渲染</b>(网页3D、游戏):必须<b>每秒画几十帧</b>让你能即时交互,所以为了快,画质要做取舍。你能拖、能玩。</p>
+      <p><b>离线渲染</b>(影视级):<b>不用即时</b>,一帧慢慢算到极致逼真,算完导出成图片/视频。你只能看成品,不能交互。</p>
+      <p>同样是 3D,这两种在"为快还是为美"上走了相反方向。理解这条,你就懂了为什么游戏画面再好也不如电影 CG 精细——<b>不是技术不行,是游戏必须实时,没时间慢慢算。</b></p>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section class="card" data-step="10" id="s10">
+    <h3><span class="emoji">🔗</span>一个模型从"被造"到"进你产品"的流水线</h3>
+    <p>新手常以为"做个 3D"是一个软件搞定的事。其实在专业流程里,一个 3D 物体往往要<strong>几个工具接力</strong>。看懂这条流水线,你就知道每个工具卡在哪个环节、自己该学哪段。</p>
+    <div class="flow">
+      <div class="flow-title">🔗 一个 3D 模型的一生(以"放进你网页"为例)</div>
+      <div class="step"><span class="num">1</span><span class="ic">🧱</span><span class="tx"><b>建模</b>:在 Blender 里把形状"雕"出来(一堆三角形,第3站)</span></div>
+      <div class="arrow">↓</div>
+      <div class="step"><span class="num">2</span><span class="ic">🎨</span><span class="tx"><b>材质/贴图</b>:给它穿"皮肤"——颜色、纹理照片、金属/粗糙感(第2站材质)</span></div>
+      <div class="arrow">↓</div>
+      <div class="step"><span class="num">3</span><span class="ic">🦴</span><span class="tx"><b>(可选)绑骨骼+动画</b>:如果要它动(走路、挥手),给它装"骨架"再做动作</span></div>
+      <div class="arrow">↓</div>
+      <div class="step"><span class="num">4</span><span class="ic">📦</span><span class="tx"><b>导出</b>:存成通用格式文件(网页常用 <b>.glb / .gltf</b>)</span></div>
+      <div class="arrow">↓</div>
+      <div class="step"><span class="num">5</span><span class="ic">🌐</span><span class="tx"><b>载入引擎/网页</b>:用 Three.js 把这个 .glb 加载进来,配上光和相机(第6站),它就出现在你产品里了</span></div>
+    </div>
+    <div class="why"><span class="lbl">🔍 深挖：为什么要"导出成通用格式"这一步</span>
+      <p>因为<b>"造模型的软件"和"用模型的引擎"是分开的</b>(第9站那条分界)。Blender 造好的模型,要让 Three.js 能读,得先翻译成一种<b>双方都认的通用文件格式</b>——网页世界最通用的就是 <term>.glb / .gltf</term>(你可以理解成"3D 界的标准打包格式")。</p>
+      <p>这和第一岛"前后端用 JSON 这种通用格式传话"是一个道理:<b>不同工具之间协作,需要一种大家都认的中间格式。</b>看到 .glb 文件别懵,那就是一个打包好的 3D 模型。</p>
+    </div>
+    <div class="tip"><b>💡 对你这种 AI native 路线的好消息:</b>你<b>不一定要自己从头建模</b>。网上有大量现成的 .glb 模型(免费/付费的模型库),你下载下来,直接让 Codex/Claude Code 帮你用 Three.js 加载进网页即可。"<b>我有一个 .glb 模型文件,请用 Three.js 把它加载进网页,加好光照和鼠标拖动</b>"——这种活它很熟。先用现成模型跑通,比一上来啃 Blender 快得多。</p>
+    </div>
+  </section>
+
+  <!-- 11 -->
+  <section class="card" data-step="11" id="s11">
+    <h3><span class="emoji">🥽</span>AR / VR 和 AI 生成 3D</h3>
+    <p>系统了解 3D,这两个热点绕不开。用大白话讲清它们是什么、和你前面学的什么关系。</p>
+    <h4>🥽 AR 与 VR:把 3D "放进现实"或"包住你"</h4>
+    <div class="why"><span class="lbl">🔍 深挖：它们本质还是 3D 渲染,只是"看的方式"变了</span>
+      <p><b>VR(虚拟现实)</b>:戴上头显,你被一个 3D 世界<b>完全包住</b>,转头能看四周。本质是——<b>把"相机📷"绑在你头上</b>,你头转,相机就转(还记得第7站"你看到什么由相机决定"吗?这里到极致了)。</p>
+      <p><b>AR(增强现实)</b>:通过手机/眼镜,把 3D 物体<b>叠加到你看到的真实画面上</b>(比如在客厅里"摆"一个虚拟沙发看效果)。本质是——让 3D 物体的光影、角度,<b>跟真实环境对齐</b>,骗你觉得它真在那。</p>
+      <p>关键:<b>它们底层还是你学的那套 3D 渲染</b>(五件套、网格、光照),只是显示和交互的方式换成了头显/摄像头。<b>所以你这一岛的地基,对 AR/VR 同样管用。</b>网页里甚至有 <term>WebXR</term> 能让 Three.js 直接做 AR/VR。</p>
+    </div>
+    <h4>🤖 AI 生成 3D:用一句话/一张图"变"出模型</h4>
+    <div class="why"><span class="lbl">🔍 深挖：它在帮你跳过最难的"建模"那一步</span>
+      <p>建模(第10站第1步)是 3D 里最费功夫的环节之一。现在有 AI 工具能<b>根据一段文字描述、或一张图片,直接生成一个 3D 模型</b>(.glb 那种)。</p>
+      <p>这对你这种"有 idea、想快速出活"的人意义很大:<b>你可能不用学 Blender,就能让 AI 生成模型,再用 Three.js 放进网页。</b>它把流水线最重的"造"那一步,变成了"描述一下"。</p>
+      <p>但要诚实:目前 AI 生成的 3D,<b>质量和可控性还在快速发展中</b>,精细产品级的东西未必够用,但做原型、做不太苛刻的展示已经很能打。这正是手册第七岛说的——<b>AI 在帮你跳过"手上的功夫",但你仍需懂原理来判断生成的东西好不好、能不能用。</b></p>
+    </div>
+    <div class="tip"><b>💡 怎么试:</b>你可以让 ChatGPT/Claude 帮你<b>梳理当前有哪些"文字/图片转3D"的工具</b>(这类工具更新很快,以最新的为准),生成模型后,同样用第10站的方式让 AI 帮你加载进网页。<b>原理你已经懂了,工具只是手段。</b></p>
+    </div>
+  </section>
+
+  <!-- 12 -->
+  <section class="card" data-step="12" id="s12">
+    <h3><span class="emoji">🧭</span>决策地图:你的 idea 该走哪条 3D 路线</h3>
+    <p>把全景收束成一张<strong>能直接对照的决策地图</strong>。看你的 idea 落在哪一格,就知道先学哪条线、用什么工具。</p>
+    <div class="why"><span class="lbl">🔍 深挖：先问自己一个问题就够了</span>
+      <p>最关键的分岔是:<b>"这个 3D 要在哪里出现、要不要实时交互?"</b></p>
+      <p>在<b>网页里、要轻量交互</b> → 网页 3D(Three.js)。<br>是<b>游戏/复杂虚拟世界</b> → 游戏引擎(Unity/虚幻)。<br>是<b>一张高清图/一段宣传片、不用交互</b> → 影视级渲染(Blender/C4D)。<br>只是<b>需要一个模型素材</b> → 建模(Blender)或 AI 生成。</p>
+    </div>
+    <table style="width:100%;border-collapse:separate;border-spacing:0 9px;margin:14px 0">
+      <tr><td style="padding:13px;background:#fff;border:2px solid var(--card-edge);border-radius:14px 0 0 14px;font-family:'ZCOOL KuaiLe';color:var(--d3d);width:42%;font-size:14px">你的 idea 是…</td><td style="padding:13px;background:#fff;border:2px solid var(--card-edge);border-left:none;border-radius:0 14px 14px 0;font-size:14px">→ 走这条路</td></tr>
+      <tr><td style="padding:12px 13px;background:#fff;border:2px solid var(--card-edge);border-radius:14px 0 0 14px;font-size:13.5px">网页上 360°展示一个产品/作品</td><td style="padding:12px 13px;background:#fff;border:2px solid var(--card-edge);border-left:none;border-radius:0 14px 14px 0;font-size:13.5px">🌐 <b>网页 3D(Three.js)</b> + 现成或AI生成的模型</td></tr>
+      <tr><td style="padding:12px 13px;background:#fff;border:2px solid var(--card-edge);border-radius:14px 0 0 14px;font-size:13.5px">网站首页加点炫酷的立体动效装饰</td><td style="padding:12px 13px;background:#fff;border:2px solid var(--card-edge);border-left:none;border-radius:0 14px 14px 0;font-size:13.5px">🌐 <b>网页 3D</b>(你前8站已经够用)</td></tr>
+      <tr><td style="padding:12px 13px;background:#fff;border:2px solid var(--card-edge);border-radius:14px 0 0 14px;font-size:13.5px">一个能玩的小游戏 / 虚拟空间</td><td style="padding:12px 13px;background:#fff;border:2px solid var(--card-edge);border-left:none;border-radius:0 14px 14px 0;font-size:13.5px">🎮 <b>游戏引擎</b>(简单的也可用网页3D起步)</td></tr>
+      <tr><td style="padding:12px 13px;background:#fff;border:2px solid var(--card-edge);border-radius:14px 0 0 14px;font-size:13.5px">一张高清渲染图 / 一段宣传动画</td><td style="padding:12px 13px;background:#fff;border:2px solid var(--card-edge);border-left:none;border-radius:0 14px 14px 0;font-size:13.5px">🎬 <b>影视级渲染</b>(Blender 等)</td></tr>
+      <tr><td style="padding:12px 13px;background:#fff;border:2px solid var(--card-edge);border-radius:14px 0 0 14px;font-size:13.5px">用手机"摆"虚拟家具看效果</td><td style="padding:12px 13px;background:#fff;border:2px solid var(--card-edge);border-left:none;border-radius:0 14px 14px 0;font-size:13.5px">🥽 <b>AR</b>(网页可用 WebXR + Three.js)</td></tr>
+      <tr><td style="padding:12px 13px;background:#fff;border:2px solid var(--card-edge);border-radius:14px 0 0 14px;font-size:13.5px">只是缺一个 3D 模型素材</td><td style="padding:12px 13px;background:#fff;border:2px solid var(--card-edge);border-left:none;border-radius:0 14px 14px 0;font-size:13.5px">🧱 <b>找现成模型 / AI 生成 / Blender 自造</b></td></tr>
+    </table>
+    <div class="keep"><span class="lbl">⭐ 全景篇总纲 & 给你的建议</span>
+      <p>3D 世界四条路:<b>🌐网页3D · 🎮游戏引擎 · 🎬影视渲染 · 🧱建模</b>;先分清<b>"造模型" vs "用模型"</b>。</p>
+      <p>模型常是<b>多工具接力</b>(建模→材质→导出.glb→载入),不同工具靠<b>通用格式</b>协作。</p>
+      <p>AR/VR 底层还是这套 3D;AI 生成 3D 帮你跳过最难的建模。</p>
+      <p><b>对你的建议:无论终点是哪条路,都从"网页 3D + 现成/AI模型"起步</b>——出成果最快、和你 web 技能最通、AI 最好帮忙。跑通一个,再按需深入别的路。</p>
+    </div>
+    <div class="back-wrap"><a class="back" href="#top">⛵ 回到本岛目录</a></div>
+  </section>
+
+  <!-- ===== 案例篇 ===== -->
+  <div style="text-align:center;margin:54px 0 8px">
+    <span style="display:inline-block;background:#e0a838;color:#fff;font-family:'ZCOOL KuaiLe';font-size:14px;padding:4px 18px;border-radius:20px;box-shadow:0 4px 0 var(--shadow)">🎇 案例篇 · 经典代码效果,全都能在这页拖着玩</span>
+  </div>
+
+  <!-- 13 -->
+  <section class="card" data-step="13" id="s13">
+    <h3><span class="emoji">🎇</span>经典代码效果案例</h3>
+    <p>这一站全是<strong>"一看就哇"的经典效果</strong>。每一个都做成了你能拖动的真实 demo,并讲清它背后的<span class="hl">那点核心思路</span>——你会发现,炫酷效果的底子,往往是很朴素的小招式重复出来的。</p>
+
+    <h4>✨ 案例一 · 粒子星空(3D 的"炫技 Hello World")</h4>
+    <div class="why"><span class="lbl">🔍 它的核心思路:成千上万个小点,各就各位</span>
+      <p>满屏流动的星辰,看着复杂,其实就是——<b>生成几千个小点,每个点给一个随机的 (x,y,z) 位置</b>(第3站说的坐标),让它们一起缓慢旋转。</p>
+      <p>关键招式叫 <term>粒子系统(Particles)</term>:不去一个个造小球(太吃性能),而是把<b>几千个点当成"一坨"一次性画出来</b>。星空、烟雾、火花、下雪,底层都是它。<b>数量堆出震撼,这是粒子的灵魂。</b></p>
+    </div>
+    <div class="demo" data-demo="particles">
+      <div class="demo-bar"><span class="demo-title">✨ 粒子星空</span><span class="demo-hint">拖动 / 滚轮</span></div>
+      <canvas></canvas>
+      <div class="demo-ctrl"><button data-act="more">更多粒子</button><button data-act="less">更少</button><button data-act="rainbow">彩色/单色</button></div>
+    </div>
+
+    <h4>🌊 案例二 · 波浪网格(用数学让平面"活"起来)</h4>
+    <div class="why"><span class="lbl">🔍 它的核心思路:让每个顶点按正弦波上下起伏</span>
+      <p>第3站说物体是<b>顶点</b>拼的网格。波浪效果就是——拿一张平整的网格,在动画循环里,<b>让每个顶点的高度按一个"波浪数学公式"(正弦 sin)随时间起伏</b>。</p>
+      <p>你不用懂这个公式,只要知道:<b>sin 是一个"平滑地一上一下循环"的函数</b>,把顶点的高低交给它,平面就变成了起伏的水面/绸缎/山丘。这是"用数学驱动视觉"的最经典入门例子。</p>
+    </div>
+    <div class="demo" data-demo="wave">
+      <div class="demo-bar"><span class="demo-title">🌊 波浪网格</span><span class="demo-hint">拖动看角度</span></div>
+      <canvas></canvas>
+      <div class="demo-ctrl"><button data-act="wire" class="on">线框</button><button data-act="solid">实心</button><button data-act="fast">加快</button><button data-act="slow">放慢</button></div>
+    </div>
+
+    <h4>🔆 案例三 · 几何阵列 + 自发光</h4>
+    <div class="why"><span class="lbl">🔍 它的核心思路:复制 + 节奏 + 发光材质</span>
+      <p>一排会呼吸/律动的方块,思路是:<b>用循环复制出一排物体</b>(第5站的循环不只能用在时间上,也能用来"批量生成"),再让它们的高度/亮度<b>按各自的位置错开节奏</b>地变化——就有了"波浪式律动"。</p>
+      <p>"发光感"则来自<b>自发光材质</b>:普通材质要靠灯照才亮,自发光材质<b>自己发光、不依赖灯</b>(像霓虹灯管)。这是做赛博朋克、科技感界面的常用招。</p>
+    </div>
+    <div class="demo" data-demo="grid">
+      <div class="demo-bar"><span class="demo-title">🔆 律动方块阵</span><span class="demo-hint">拖动旋转</span></div>
+      <canvas></canvas>
+      <div class="demo-ctrl"><button data-act="wave2" class="on">波浪律动</button><button data-act="rand">随机跳动</button></div>
+    </div>
+
+    <h4>🖱️ 案例四 · 鼠标视差跟随</h4>
+    <div class="why"><span class="lbl">🔍 它的核心思路:相机/物体随鼠标轻轻偏移</span>
+      <p>很多高级网站,鼠标一动,画面里的东西会<b>轻轻地跟着偏一点</b>,产生"近的动得多、远的动得少"的<term>视差</term>感,立刻显高级。</p>
+      <p>原理朴素到你想不到:<b>读出鼠标在屏幕上的位置,把它换算成一个很小的偏移量,每帧让相机(或物体)朝那个方向挪一点点。</b>近大远小(第14站透视)会自动让近处的东西偏移看起来更明显——视差就出来了。</p>
+    </div>
+    <div class="demo" data-demo="parallax">
+      <div class="demo-bar"><span class="demo-title">🖱️ 鼠标视差(在画面上移动鼠标)</span><span class="demo-hint">移动鼠标试试</span></div>
+      <canvas></canvas>
+    </div>
+    <div class="keep"><span class="lbl">⭐ 案例篇的共同秘密</span>
+      <p>这四个"哇"效果,拆开都很朴素:<b>粒子=很多点、波浪=顶点按sin起伏、阵列=复制+错开节奏、视差=随鼠标微偏</b>。</p>
+      <p>炫酷往往不是某个高深魔法,而是<b>简单招式 × 数量 × 节奏</b>。看懂这点,你就敢让 AI 帮你做任何效果了——你能说清要什么。</p>
+    </div>
+    <div class="back-wrap"><a class="back" href="#top">⛵ 回到本岛目录</a></div>
+  </section>
+
+  <!-- ===== 美术篇 ===== -->
+  <div style="text-align:center;margin:54px 0 8px">
+    <span style="display:inline-block;background:#d96aa8;color:#fff;font-family:'ZCOOL KuaiLe';font-size:14px;padding:4px 18px;border-radius:20px;box-shadow:0 4px 0 var(--shadow)">🎨 美术篇 · 让 3D "好看"的,是这些画画的人早就懂的道理</span>
+  </div>
+
+  <!-- 14 透视 -->
+  <section class="card" data-step="14" id="s14">
+    <h3><span class="emoji">📐</span>透视：近大远小的灭点魔法</h3>
+    <p>第1站说立体感靠"近大远小"。这件事在美术里有个精确的体系,叫 <term>透视(Perspective)</term>——画家几百年前就摸透了,3D 程序里它变成了相机的一个参数。</p>
+    <div class="why"><span class="lbl">🔍 深挖：所有平行线,都奔向远处一个"灭点"</span>
+      <p>站在笔直的马路中间往远看:两条本来平行的路边,<b>会在远方汇聚到一个点</b>——这个点叫 <term>灭点(Vanishing Point)</term>。这是透视最核心的现象。</p>
+      <p><b>一点透视</b>:只有一个灭点(比如正对着一条走廊)。<b>两点透视</b>:看一个立方体的角,左右两组线各奔一个灭点(最常见的"立体感"构图)。<b>三点透视</b>:再加上下方向(仰视高楼/俯视峡谷)。</p>
+      <p>在 3D 程序里,这一切由相机的 <term>视野角度(FOV)</term> 控制——它就是"镜头的广角程度"。<b>FOV 大=广角=透视夸张(近大远小很猛,有冲击力但会变形);FOV 小=长焦=透视平缓(更稳、更接近平面)。</b>这是你调"画面感觉"的关键旋钮。</p>
+    </div>
+    <p>下面这条"无限延伸的柱子走廊",你可以<strong>拖动滑块改变相机的 FOV(广角程度)</strong>,亲眼看透视如何随之夸张或平缓——这就是导演选镜头、3D 里调 FOV 的同一件事:</p>
+    <div class="demo" data-demo="fov">
+      <div class="demo-bar"><span class="demo-title">📐 透视与灭点(拖滑块改广角)</span><span class="demo-hint">↓ 拖动滑块</span></div>
+      <canvas></canvas>
+      <div class="demo-ctrl" style="align-items:center">
+        <span style="color:#d9d0f5;font-size:13px">广角 FOV:</span>
+        <input type="range" min="20" max="100" value="55" data-act="fov" style="flex:1;min-width:120px;accent-color:#8fd98a">
+        <span data-act="fovval" style="color:#8fd98a;font-size:13px;min-width:38px">55°</span>
+      </div>
+    </div>
+    <div class="tip"><b>💡 一句能用上的:</b>想要画面更<b>有冲击力、戏剧化</b>(产品大特写、英雄感)→ 用大 FOV(广角);想要画面<b>稳重、真实、不变形</b>(展示精细产品)→ 用小 FOV。这和摄影师选镜头是完全一样的判断。</p>
+    </div>
+  </section>
+
+  <!-- 15 光影 -->
+  <section class="card" data-step="15" id="s15">
+    <h3><span class="emoji">💡</span>光影：三件套让物体"立"起来</h3>
+    <p>第4站讲了"没光看不见"。这一站讲美术上更进一层的:<span class="hl">光打在物体上,会形成几个固定的区域,画准了它们,东西就"立体得可信"。</span>素描课第一节教的就是这个。</p>
+    <div class="why"><span class="lbl">🔍 深挖：一个球上的"五大调子"(记住前三个就够)</span>
+      <p>拿一个被一盏灯照着的球,它表面从亮到暗,有几个区域:</p>
+      <p><b>① 亮面/高光</b>:正对着光的地方最亮,最亮的那个小点叫"高光"(物体越光滑高光越锐)。<br><b>② 灰面/过渡</b>:从亮慢慢转暗的中间地带,<b>这层渐变是"圆"的关键</b>。<br><b>③ 暗面</b>:背光的一面。<br><b>④ 反光</b>:暗面里因为环境反射,会有一点点回亮(别让暗面死黑)。<br><b>⑤ 投影</b>:物体在地面投下的影子——<b>它把物体"钉"在了空间里,没有投影会像漂浮的贴纸。</b></p>
+      <p>在 Three.js 里:<b>高光</b>由材质的"光滑度"决定、<b>明暗渐变</b>由平行光方向决定、<b>暗面别死黑</b>靠加一点环境光、<b>投影</b>要专门打开阴影开关。美术规律 → 程序参数,一一对应。</p>
+    </div>
+    <p>下面这个球,你可以<strong>开关"投影"、调"光滑度"</strong>,看高光、明暗、影子怎么联手把它从"贴纸"变成"真的球":</p>
+    <div class="demo" data-demo="shading">
+      <div class="demo-bar"><span class="demo-title">💡 光影三件套</span><span class="demo-hint">拖动旋转</span></div>
+      <canvas></canvas>
+      <div class="demo-ctrl" style="align-items:center;flex-wrap:wrap">
+        <button data-act="shadow">开/关投影</button>
+        <span style="color:#d9d0f5;font-size:13px">光滑度:</span>
+        <input type="range" min="0" max="100" value="35" data-act="rough" style="flex:1;min-width:100px;accent-color:#8fd98a">
+      </div>
+    </div>
+    <div class="keep"><span class="lbl">⭐ 让东西"立体得可信"的口诀</span>
+      <p><b>亮面、暗面、投影</b>——三件套缺一,立体感就塌。</p>
+      <p>暗面<b>别死黑</b>(加点环境光当反光);<b>一定要有投影</b>(把物体钉在地上)。</p>
+      <p>新手做的 3D "看着假",十有八九是<b>光太平(没明暗渐变)或没投影</b>。</p>
+    </div>
+  </section>
+
+  <!-- 16 色彩 -->
+  <section class="card" data-step="16" id="s16">
+    <h3><span class="emoji">🎨</span>色彩：冷暖与对比决定质感</h3>
+    <p>最后一块美术拼图:颜色。<span class="hl">同一个形状、同样的光,换一套配色,质感和情绪天差地别。</span>这也是有规律可循的,不是凭感觉乱调。</p>
+    <div class="why"><span class="lbl">🔍 深挖：三条最实用的色彩规律</span>
+      <p><b>① 冷暖对比制造立体与氛围。</b>美术里常用"<b>暖色光打亮面、冷色光打暗面</b>"(比如橙色主光 + 蓝色环境光)——因为现实中阳光偏暖、阴影偏冷。这一招能让画面瞬间"高级、有电影感"。你看大片海报几乎都是橙蓝对撞。</p>
+      <p><b>② 对比度决定"清晰"还是"柔和"。</b>亮暗差距大=强对比=硬朗、戏剧化;差距小=低对比=柔和、高级、安静。不是越鲜艳越好,<b>克制的对比往往更耐看</b>。</p>
+      <p><b>③ 少即是多:主色 + 点缀。</b>新手爱用很多种鲜艳颜色,结果很"廉价"。专业做法是<b>定一个主色调,再用一两个点缀色提神</b>。这和你前面网页岛说的"配色统一"是同一个道理。</p>
+    </div>
+    <p>下面同一个物体,你<strong>切换几套配色方案</strong>,直接感受冷暖和对比怎么改变它的"贵气":</p>
+    <div class="demo" data-demo="color">
+      <div class="demo-bar"><span class="demo-title">🎨 配色对质感的影响</span><span class="demo-hint">拖动旋转</span></div>
+      <canvas></canvas>
+      <div class="demo-ctrl"><button data-act="cinema" class="on">橙蓝·电影感</button><button data-act="candy">糖果·活泼</button><button data-act="mono">单色·高级</button><button data-act="cyber">霓虹·赛博</button></div>
+    </div>
+    <div class="keep"><span class="lbl">⭐ 美术篇总纲</span>
+      <p>让 3D 好看,靠的是画家早懂的三件事:<b>透视📐(灭点/FOV)、光影💡(亮暗+投影)、色彩🎨(冷暖/对比/克制)</b>。</p>
+      <p>它们全都能<b>翻译成 Three.js 的参数</b>:FOV、光的方向、材质光滑度、阴影开关、颜色值。</p>
+      <p>所以你这个"导演"的活,不只是技术——<b>懂一点美术规律,你才能判断"做得好不好看",并说清让 AI 怎么改。</b>技术让它"动起来",美术让它"好看",两者都懂,才是完整的 3D 视觉。</p>
+    </div>
+    <div class="back-wrap"><a class="back" href="#top">⛵ 回到本岛目录</a></div>
+  </section>
+
+  <div class="ending">
+    <div class="big">🧊📷💡🎨🌌🎮</div>
+    <h3>3D 这一岛,你看懂也摸到了</h3>
+    <p>你现在懂了立体感怎么被"骗"出来、3D 五件套、物体为什么是三角形拼的、
+    光为什么是看见的前提、动画怎么靠循环转起来,还看了 Three.js 从一个方块到能交互的完整代码——
+    更有了整个 3D 世界的版图:网页/游戏/影视/建模四条路、模型的流水线、AR/VR 和 AI 生成 3D。
+    <b>这一岛的每个 3D,都是真的在你眼前跑着的,你拖动过它们。</b></p>
+    <p class="soft">无论你最终想走哪条路,都从"网页 3D + 现成/AI 模型"起步最快。<br>挑一个想展示的小东西,把这岛的指令范例发给 Codex/Claude Code,做出你的第一个 3D。🌿</p>
+  </div>
+  <p class="footnote">🏝️ 小岛学堂 · 3D 视觉岛 · 立体是假的,但你已经懂了它怎么骗得这么真</p>
+</div>
+
+<div id="toTop" title="回到顶部">⛵</div>
+
+<!-- Three.js (从 CDN 引入;多源,确保能加载) -->
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js"
+}}
+</script>
+<script type="module">
+// 尝试主源(cdnjs),失败则自动切到备用源(jsdelivr / unpkg)
+let THREE;
+try{
+  THREE = await import('three');
+}catch(e){
+  try{ THREE = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js'); }
+  catch(e2){ try{ THREE = await import('https://unpkg.com/three@0.160.0/build/three.module.js'); }catch(e3){ THREE=null; } }
+}
+if(!THREE){
+  document.querySelectorAll('.demo').forEach(box=>{
+    const c=box.querySelector('canvas');
+    if(c) c.replaceWith(Object.assign(document.createElement('div'),
+      {style:'color:#d9d0f5;padding:40px;text-align:center;font-size:14px;line-height:1.7',
+       innerHTML:'🌐 这个实时 3D 实例需要联网加载 Three.js 才能显示。<br>原理讲解和下面的代码完全不受影响,你照样能学。'}));
+  });
+  throw new Error('three load failed (offline)');
+}
+
+// ---- 通用:为一个 .demo 创建基础场景 ----
+function setupRenderer(canvas){
+  const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  function resize(){
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    renderer.setSize(w, h, false);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  return {renderer, resize};
+}
+function makeCamera(canvas){
+  const cam = new THREE.PerspectiveCamera(60, canvas.clientWidth/canvas.clientHeight, 0.1, 100);
+  cam.position.set(0,0,4);
+  return cam;
+}
+// 简易鼠标拖动旋转(自己实现,避免额外加载 OrbitControls)
+function addDrag(canvas, getTarget){
+  let dragging=false, px=0, py=0;
+  canvas.addEventListener('pointerdown',e=>{dragging=true;px=e.clientX;py=e.clientY;});
+  window.addEventListener('pointerup',()=>dragging=false);
+  window.addEventListener('pointermove',e=>{
+    if(!dragging)return;
+    const t=getTarget(); if(!t)return;
+    t.rotation.y += (e.clientX-px)*0.01;
+    t.rotation.x += (e.clientY-py)*0.01;
+    px=e.clientX; py=e.clientY;
+  });
+  // 滚轮缩放(动相机)
+  canvas.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const cam = canvas._cam; if(!cam)return;
+    cam.position.z = Math.min(9, Math.max(2, cam.position.z + (e.deltaY>0?0.4:-0.4)));
+  },{passive:false});
+}
+
+const demos = {};
+
+// ---- Demo 1: 基础方块 ----
+function demoCube(box){
+  const canvas = box.querySelector('canvas');
+  const {renderer} = setupRenderer(canvas);
+  const scene = new THREE.Scene();
+  const cam = makeCamera(canvas); canvas._cam=cam;
+  const cube = new THREE.Mesh(
+    new THREE.BoxGeometry(1.4,1.4,1.4),
+    new THREE.MeshStandardMaterial({color:0x6c8ce8, roughness:0.45, metalness:0.15})
+  );
+  scene.add(cube);
+  scene.add(new THREE.AmbientLight(0xffffff,0.55));
+  const dl=new THREE.DirectionalLight(0xffffff,1.1); dl.position.set(3,4,5); scene.add(dl);
+  addDrag(canvas, ()=>cube);
+  let auto=true;
+  function loop(){
+    if(auto){cube.rotation.y+=0.006;cube.rotation.x+=0.003;}
+    cam.aspect=canvas.clientWidth/canvas.clientHeight; cam.updateProjectionMatrix();
+    renderer.render(scene,cam);
+    requestAnimationFrame(loop);
+  }
+  canvas.addEventListener('pointerdown',()=>auto=false);
+  loop();
+}
+
+// ---- Demo 2: 实心 vs 线框 ----
+function demoWire(box){
+  const canvas=box.querySelector('canvas');
+  const {renderer}=setupRenderer(canvas);
+  const scene=new THREE.Scene();
+  const cam=makeCamera(canvas); canvas._cam=cam;
+  const geo=new THREE.IcosahedronGeometry(1.4,4);
+  const solid=new THREE.MeshStandardMaterial({color:0x8fd98a,roughness:0.5,flatShading:false});
+  const ball=new THREE.Mesh(geo, solid);
+  scene.add(ball);
+  scene.add(new THREE.AmbientLight(0xffffff,0.6));
+  const dl=new THREE.DirectionalLight(0xffffff,1.1); dl.position.set(3,4,5); scene.add(dl);
+  addDrag(canvas, ()=>ball);
+  let auto=true;
+  box.querySelectorAll('button[data-act]').forEach(b=>{
+    b.addEventListener('click',()=>{
+      box.querySelectorAll('button[data-act]').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      if(b.dataset.act==='wire'){ ball.material=new THREE.MeshBasicMaterial({color:0x8fd98a,wireframe:true}); }
+      else { ball.material=solid; }
+    });
+  });
+  canvas.addEventListener('pointerdown',()=>auto=false);
+  function loop(){ if(auto)ball.rotation.y+=0.005; cam.aspect=canvas.clientWidth/canvas.clientHeight;cam.updateProjectionMatrix(); renderer.render(scene,cam); requestAnimationFrame(loop);}
+  loop();
+}
+
+// ---- Demo 3: 光照开关 ----
+function demoLight(box){
+  const canvas=box.querySelector('canvas');
+  const {renderer}=setupRenderer(canvas);
+  const scene=new THREE.Scene();
+  const cam=makeCamera(canvas); canvas._cam=cam;
+  const ball=new THREE.Mesh(
+    new THREE.SphereGeometry(1.4,48,48),
+    new THREE.MeshStandardMaterial({color:0xff9d8a,roughness:0.35,metalness:0.1})
+  );
+  scene.add(ball);
+  const amb=new THREE.AmbientLight(0xffffff,0.5);
+  const dir=new THREE.DirectionalLight(0xffffff,1.3); dir.position.set(3,3,4);
+  const pt=new THREE.PointLight(0xffe39a,1.6,20); pt.position.set(-3,-1,3);
+  scene.add(amb); scene.add(dir);
+  const state={amb:true,dir:true,pt:false};
+  addDrag(canvas, ()=>ball);
+  box.querySelectorAll('button[data-act]').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const k=b.dataset.act; state[k]=!state[k]; b.classList.toggle('on',state[k]);
+      // 重新装灯
+      [amb,dir,pt].forEach(l=>scene.remove(l));
+      if(state.amb)scene.add(amb); if(state.dir)scene.add(dir); if(state.pt)scene.add(pt);
+    });
+  });
+  let auto=true; canvas.addEventListener('pointerdown',()=>auto=false);
+  function loop(){ if(auto)ball.rotation.y+=0.004; cam.aspect=canvas.clientWidth/canvas.clientHeight;cam.updateProjectionMatrix(); renderer.render(scene,cam); requestAnimationFrame(loop);}
+  loop();
+}
+
+// ---- Demo 4: 完整可玩 ----
+function demoFull(box){
+  const canvas=box.querySelector('canvas');
+  const {renderer}=setupRenderer(canvas);
+  const scene=new THREE.Scene();
+  const cam=makeCamera(canvas); cam.position.set(0,0,4.5); canvas._cam=cam;
+  const colors=[0x6c8ce8,0xff9d8a,0x8fd98a,0xffd36b,0xc89bf0];
+  let ci=0;
+  const mat=new THREE.MeshStandardMaterial({color:colors[0],roughness:0.4,metalness:0.2});
+  const shapes=[
+    ()=>new THREE.TorusKnotGeometry(0.9,0.3,120,16),
+    ()=>new THREE.BoxGeometry(1.5,1.5,1.5),
+    ()=>new THREE.IcosahedronGeometry(1.3,0),
+    ()=>new THREE.TorusGeometry(1,0.4,24,80)
+  ];
+  let si=0;
+  let obj=new THREE.Mesh(shapes[0](),mat); scene.add(obj);
+  scene.add(new THREE.AmbientLight(0xffffff,0.5));
+  const dl=new THREE.DirectionalLight(0xffffff,1.2); dl.position.set(3,4,5); scene.add(dl);
+  const pt=new THREE.PointLight(0x9bb8ff,1.0,30); pt.position.set(-4,-2,2); scene.add(pt);
+  addDrag(canvas, ()=>obj);
+  let spin=true;
+  box.querySelectorAll('button[data-act]').forEach(b=>{
+    b.addEventListener('click',()=>{
+      if(b.dataset.act==='spin'){ spin=!spin; b.classList.toggle('on',spin); }
+      if(b.dataset.act==='color'){ ci=(ci+1)%colors.length; mat.color.setHex(colors[ci]); }
+      if(b.dataset.act==='shape'){ si=(si+1)%shapes.length; const old=obj; const r=obj.rotation.clone();
+        obj=new THREE.Mesh(shapes[si](),mat); obj.rotation.copy(r); scene.add(obj); scene.remove(old); }
+    });
+  });
+  function loop(){ if(spin){obj.rotation.y+=0.008;obj.rotation.x+=0.004;} cam.aspect=canvas.clientWidth/canvas.clientHeight;cam.updateProjectionMatrix(); renderer.render(scene,cam); requestAnimationFrame(loop);}
+  loop();
+}
+
+// ---- Demo: 粒子星空 ----
+function demoParticles(box){
+  const canvas=box.querySelector('canvas');
+  const {renderer}=setupRenderer(canvas);
+  const scene=new THREE.Scene();
+  const cam=makeCamera(canvas); cam.position.set(0,0,5); canvas._cam=cam;
+  let count=2500, rainbow=false, points=null;
+  function build(){
+    if(points){scene.remove(points); points.geometry.dispose();}
+    const geo=new THREE.BufferGeometry();
+    const pos=new Float32Array(count*3), col=new Float32Array(count*3);
+    for(let i=0;i<count;i++){
+      const r=2+Math.random()*3, t=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1);
+      pos[i*3]=r*Math.sin(ph)*Math.cos(t); pos[i*3+1]=r*Math.sin(ph)*Math.sin(t); pos[i*3+2]=r*Math.cos(ph);
+      const c=new THREE.Color(); rainbow?c.setHSL(Math.random(),0.7,0.6):c.setHSL(0.6,0.3,0.7+Math.random()*0.3);
+      col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
+    }
+    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+    geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+    const mat=new THREE.PointsMaterial({size:0.05,vertexColors:true,transparent:true,opacity:0.9});
+    points=new THREE.Points(geo,mat); scene.add(points);
+  }
+  build();
+  addDrag(canvas,()=>points);
+  box.querySelectorAll('button[data-act]').forEach(b=>b.addEventListener('click',()=>{
+    if(b.dataset.act==='more')count=Math.min(8000,count+2000);
+    if(b.dataset.act==='less')count=Math.max(800,count-2000);
+    if(b.dataset.act==='rainbow')rainbow=!rainbow;
+    build();
+  }));
+  let auto=true; canvas.addEventListener('pointerdown',()=>auto=false);
+  function loop(){ if(auto&&points)points.rotation.y+=0.0015; cam.aspect=canvas.clientWidth/canvas.clientHeight;cam.updateProjectionMatrix(); renderer.render(scene,cam); requestAnimationFrame(loop);}
+  loop();
+}
+
+// ---- Demo: 波浪网格 ----
+function demoWave(box){
+  const canvas=box.querySelector('canvas');
+  const {renderer}=setupRenderer(canvas);
+  const scene=new THREE.Scene();
+  const cam=makeCamera(canvas); cam.position.set(0,2.4,3.2); cam.lookAt(0,0,0); canvas._cam=cam;
+  const geo=new THREE.PlaneGeometry(5,5,40,40);
+  let mat=new THREE.MeshBasicMaterial({color:0x6c8ce8,wireframe:true});
+  const mesh=new THREE.Mesh(geo,mat); mesh.rotation.x=-Math.PI/2.4; scene.add(mesh);
+  scene.add(new THREE.AmbientLight(0xffffff,0.6));
+  const dl=new THREE.DirectionalLight(0xffffff,1); dl.position.set(2,4,3); scene.add(dl);
+  const base=geo.attributes.position.array.slice();
+  let speed=1, solid=false;
+  box.querySelectorAll('button[data-act]').forEach(b=>b.addEventListener('click',()=>{
+    const a=b.dataset.act;
+    if(a==='wire'){solid=false; mesh.material=new THREE.MeshBasicMaterial({color:0x6c8ce8,wireframe:true});}
+    if(a==='solid'){solid=true; mesh.material=new THREE.MeshStandardMaterial({color:0x6c8ce8,roughness:0.5,side:THREE.DoubleSide,flatShading:true});}
+    if(a==='fast')speed=Math.min(3,speed+0.5);
+    if(a==='slow')speed=Math.max(0.2,speed-0.5);
+    if(a==='wire'||a==='solid'){box.querySelectorAll('button[data-act="wire"],button[data-act="solid"]').forEach(x=>x.classList.remove('on'));b.classList.add('on');}
+  }));
+  let auto=true; addDrag(canvas,()=>mesh); canvas.addEventListener('pointerdown',()=>auto=false);
+  let t=0;
+  function loop(){
+    t+=0.02*speed;
+    const p=geo.attributes.position.array;
+    for(let i=0;i<p.length;i+=3){ const x=base[i],y=base[i+1]; p[i+2]=Math.sin(x*1.5+t)*0.35+Math.cos(y*1.5+t*0.8)*0.35; }
+    geo.attributes.position.needsUpdate=true; geo.computeVertexNormals();
+    cam.aspect=canvas.clientWidth/canvas.clientHeight;cam.updateProjectionMatrix();
+    renderer.render(scene,cam); requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+// ---- Demo: 律动方块阵 ----
+function demoGrid(box){
+  const canvas=box.querySelector('canvas');
+  const {renderer}=setupRenderer(canvas);
+  const scene=new THREE.Scene();
+  const cam=makeCamera(canvas); cam.position.set(4,5,6); cam.lookAt(0,0,0); canvas._cam=cam;
+  scene.add(new THREE.AmbientLight(0xffffff,0.5));
+  const dl=new THREE.DirectionalLight(0xffffff,1); dl.position.set(3,6,4); scene.add(dl);
+  const group=new THREE.Group(); scene.add(group);
+  const N=8, cubes=[];
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+    const m=new THREE.Mesh(new THREE.BoxGeometry(0.6,1,0.6),
+      new THREE.MeshStandardMaterial({color:0x6c8ce8,emissive:0x1a2a55,roughness:0.4,metalness:0.3}));
+    m.position.set(i-N/2+0.5,0,j-N/2+0.5); group.add(m); cubes.push({m,i,j});
+  }
+  let mode='wave2';
+  box.querySelectorAll('button[data-act]').forEach(b=>b.addEventListener('click',()=>{
+    box.querySelectorAll('button[data-act]').forEach(x=>x.classList.remove('on'));b.classList.add('on');mode=b.dataset.act;
+  }));
+  addDrag(canvas,()=>group);
+  let t=0;
+  function loop(){
+    t+=0.04;
+    cubes.forEach(({m,i,j})=>{
+      let h;
+      if(mode==='wave2')h=Math.sin(t+(i+j)*0.4)*0.8+1.2;
+      else h=Math.abs(Math.sin(t*1.5+i*1.7+j*2.3))*1.8+0.4;
+      m.scale.y=h; m.position.y=h/2-0.5;
+      const c=0.4+h*0.25; m.material.emissive.setRGB(c*0.2,c*0.35,c*0.7);
+    });
+    cam.aspect=canvas.clientWidth/canvas.clientHeight;cam.updateProjectionMatrix();
+    renderer.render(scene,cam); requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+// ---- Demo: 鼠标视差 ----
+function demoParallax(box){
+  const canvas=box.querySelector('canvas');
+  const {renderer}=setupRenderer(canvas);
+  const scene=new THREE.Scene();
+  const cam=makeCamera(canvas); cam.position.set(0,0,6); canvas._cam=cam;
+  scene.add(new THREE.AmbientLight(0xffffff,0.55));
+  const dl=new THREE.DirectionalLight(0xffffff,1); dl.position.set(2,3,4); scene.add(dl);
+  // 几层不同深度的物体,产生视差
+  const cols=[0xff9d8a,0x8fd98a,0xffd36b,0xc89bf0,0x6c8ce8];
+  const items=[];
+  for(let i=0;i<28;i++){
+    const z=-2-Math.random()*8;
+    const m=new THREE.Mesh(new THREE.IcosahedronGeometry(0.18+Math.random()*0.3,0),
+      new THREE.MeshStandardMaterial({color:cols[i%cols.length],roughness:0.4,metalness:0.2}));
+    m.position.set((Math.random()-0.5)*9,(Math.random()-0.5)*6,z);
+    scene.add(m); items.push(m);
+  }
+  let mx=0,my=0;
+  canvas.addEventListener('pointermove',e=>{
+    const r=canvas.getBoundingClientRect();
+    mx=((e.clientX-r.left)/r.width-0.5)*2; my=((e.clientY-r.top)/r.height-0.5)*2;
+  });
+  function loop(){
+    cam.position.x += (mx*1.5-cam.position.x)*0.05;
+    cam.position.y += (-my*1.0-cam.position.y)*0.05;
+    cam.lookAt(0,0,-4);
+    items.forEach(m=>{m.rotation.x+=0.005;m.rotation.y+=0.007;});
+    cam.aspect=canvas.clientWidth/canvas.clientHeight;cam.updateProjectionMatrix();
+    renderer.render(scene,cam); requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+// ---- Demo: 透视 FOV ----
+function demoFov(box){
+  const canvas=box.querySelector('canvas');
+  const {renderer}=setupRenderer(canvas);
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(55, canvas.clientWidth/canvas.clientHeight,0.1,200);
+  cam.position.set(0,0,1); canvas._cam=cam;
+  scene.add(new THREE.AmbientLight(0xffffff,0.6));
+  const dl=new THREE.DirectionalLight(0xffffff,1); dl.position.set(2,4,3); scene.add(dl);
+  // 两排柱子向远处延伸 -> 灭点
+  const cols=new THREE.Group(); scene.add(cols);
+  for(let i=0;i<14;i++){
+    [-1.6,1.6].forEach(x=>{
+      const m=new THREE.Mesh(new THREE.BoxGeometry(0.4,2.2,0.4),
+        new THREE.MeshStandardMaterial({color:i%2?0x6c8ce8:0x9bb1ee,roughness:0.6}));
+      m.position.set(x,0,-i*2.2); cols.add(m);
+    });
+  }
+  // 地面
+  const fl=new THREE.Mesh(new THREE.PlaneGeometry(8,40),new THREE.MeshStandardMaterial({color:0x3a3550,roughness:1}));
+  fl.rotation.x=-Math.PI/2; fl.position.set(0,-1.1,-15); scene.add(fl);
+  const slider=box.querySelector('input[data-act="fov"]');
+  const val=box.querySelector('[data-act="fovval"]');
+  function setF(){ cam.fov=+slider.value; cam.updateProjectionMatrix(); val.textContent=slider.value+'°'; }
+  slider.addEventListener('input',setF); setF();
+  function loop(){ cam.aspect=canvas.clientWidth/canvas.clientHeight;cam.updateProjectionMatrix(); renderer.render(scene,cam); requestAnimationFrame(loop);}
+  loop();
+}
+
+// ---- Demo: 光影 ----
+function demoShading(box){
+  const canvas=box.querySelector('canvas');
+  const {renderer}=setupRenderer(canvas);
+  renderer.shadowMap.enabled=true;
+  const scene=new THREE.Scene();
+  const cam=makeCamera(canvas); cam.position.set(0,1.5,4); cam.lookAt(0,0,0); canvas._cam=cam;
+  const mat=new THREE.MeshStandardMaterial({color:0xff9d8a,roughness:0.35,metalness:0.1});
+  const ball=new THREE.Mesh(new THREE.SphereGeometry(1,48,48),mat); ball.position.y=0.2; ball.castShadow=true; scene.add(ball);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(10,10),new THREE.MeshStandardMaterial({color:0x4a4566,roughness:1}));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-1; floor.receiveShadow=true; scene.add(floor);
+  scene.add(new THREE.AmbientLight(0xffffff,0.4));
+  const dl=new THREE.DirectionalLight(0xffffff,1.3); dl.position.set(3,5,2); dl.castShadow=true; scene.add(dl);
+  let shadow=true;
+  box.querySelectorAll('button[data-act="shadow"]').forEach(b=>b.addEventListener('click',()=>{
+    shadow=!shadow; dl.castShadow=shadow; floor.visible=shadow; b.classList.toggle('on',shadow);
+  }));
+  const r=box.querySelector('input[data-act="rough"]');
+  if(r)r.addEventListener('input',()=>{mat.roughness=r.value/100;});
+  let auto=true; addDrag(canvas,()=>ball); canvas.addEventListener('pointerdown',()=>auto=false);
+  function loop(){ if(auto)ball.rotation.y+=0.004; cam.aspect=canvas.clientWidth/canvas.clientHeight;cam.updateProjectionMatrix(); renderer.render(scene,cam); requestAnimationFrame(loop);}
+  loop();
+}
+
+// ---- Demo: 配色 ----
+function demoColor(box){
+  const canvas=box.querySelector('canvas');
+  const {renderer}=setupRenderer(canvas);
+  const scene=new THREE.Scene();
+  const cam=makeCamera(canvas); cam.position.set(0,0,4.5); canvas._cam=cam;
+  const mat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:0.35,metalness:0.3});
+  const obj=new THREE.Mesh(new THREE.TorusKnotGeometry(0.85,0.3,140,18),mat); scene.add(obj);
+  const amb=new THREE.AmbientLight(0xffffff,0.4); scene.add(amb);
+  const key=new THREE.DirectionalLight(0xffffff,1.4); key.position.set(3,3,4); scene.add(key);
+  const fill=new THREE.PointLight(0xffffff,1.0,30); fill.position.set(-4,-2,2); scene.add(fill);
+  const schemes={
+    cinema:{obj:0xdfe6f0,key:0xffb066,fill:0x4070ff,amb:0.25}, // 暖主光+冷补光
+    candy:{obj:0xff7eb6,key:0xffe066,fill:0x66e0ff,amb:0.6},
+    mono:{obj:0x9aa6c2,key:0xffffff,fill:0x8090b0,amb:0.4},
+    cyber:{obj:0x20203a,key:0xff2bd6,fill:0x16f5ff,amb:0.15}
+  };
+  function apply(s){
+    const c=schemes[s]; mat.color.setHex(c.obj); mat.emissive.setHex(s==='cyber'?0x101030:0x000000);
+    key.color.setHex(c.key); fill.color.setHex(c.fill); amb.intensity=c.amb;
+  }
+  apply('cinema');
+  box.querySelectorAll('button[data-act]').forEach(b=>b.addEventListener('click',()=>{
+    box.querySelectorAll('button[data-act]').forEach(x=>x.classList.remove('on'));b.classList.add('on');apply(b.dataset.act);
+  }));
+  let auto=true; addDrag(canvas,()=>obj); canvas.addEventListener('pointerdown',()=>auto=false);
+  function loop(){ if(auto){obj.rotation.y+=0.006;obj.rotation.x+=0.003;} cam.aspect=canvas.clientWidth/canvas.clientHeight;cam.updateProjectionMatrix(); renderer.render(scene,cam); requestAnimationFrame(loop);}
+  loop();
+}
+
+// 启动所有 demo
+function start(){
+  document.querySelectorAll('.demo').forEach(box=>{
+    const k=box.dataset.demo;
+    try{
+      if(k==='cube1')demoCube(box);
+      else if(k==='wire')demoWire(box);
+      else if(k==='light')demoLight(box);
+      else if(k==='full')demoFull(box);
+      else if(k==='particles')demoParticles(box);
+      else if(k==='wave')demoWave(box);
+      else if(k==='grid')demoGrid(box);
+      else if(k==='parallax')demoParallax(box);
+      else if(k==='fov')demoFov(box);
+      else if(k==='shading')demoShading(box);
+      else if(k==='color')demoColor(box);
+    }catch(err){
+      box.querySelector('canvas').replaceWith(Object.assign(document.createElement('div'),
+        {style:'color:#d9d0f5;padding:40px;text-align:center;font-size:14px',
+         textContent:'(这个 3D 实例需要联网加载 Three.js 才能显示;原理和代码不受影响)'}));
+    }
+  });
+}
+start();
+
+// 区块浮现 + 回顶
+const obs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='none'}})},{threshold:.06});
+document.querySelectorAll('section.card,.ending').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(18px)';el.style.transition='opacity .55s ease,transform .55s ease';obs.observe(el)});
+const t=document.getElementById('toTop');
+window.addEventListener('scroll',()=>{window.scrollY>500?t.classList.add('show'):t.classList.remove('show')});
+t.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+</script>
+</body>
+</html>
